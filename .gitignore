@@ -1,0 +1,13 @@
+node_modules
+.next
+.env
+.env.local
+.env.production
+.env.development
+dashboard-templates
+ATOMIC_DESIGN_GUIDE.md
+DASHBOARD_ATOMIC_IMPLEMENTATION.md
+API-Documentation.md
+api-spec.json
+paths.json
+schemas.json
