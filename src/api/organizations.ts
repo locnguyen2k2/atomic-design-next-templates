@@ -3,8 +3,15 @@ import type { Organization, PaginatedResponse, ListParams } from '@/types';
 
 export const organizationsApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<Organization>> => {
-    const { data } = await apiClient.get('/organizations', { params });
-    return data;
+    const { data: response } = await apiClient.get('/organizations', { params });
+    const data = response?.data;
+    return {
+      data: data?.organizations || [],
+      total: data?.total || 0,
+      page: data?.page || 1,
+      limit: data?.limit || 10,
+      totalPages: data?.totalPages || 1,
+    };
   },
 
   get: async (id: string): Promise<Organization> => {

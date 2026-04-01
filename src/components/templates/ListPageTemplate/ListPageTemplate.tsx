@@ -23,10 +23,12 @@ interface ListPageTemplateProps<T> {
   data: T[];
   columns: Column<T>[];
   keyField: keyof T;
+  isLoading?: boolean;
   renderForm?: (props: any) => React.ReactNode;
   onCreate?: (data: T) => void;
   onUpdate?: (id: string, data: Partial<T>) => void;
   onDelete?: (id: string) => void;
+  filters?: React.ReactNode;
   emptyState?: {
     icon: Parameters<typeof import('@/components/atoms/Icon').Icon>[0]['name'];
     title: string;
@@ -42,10 +44,12 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   data,
   columns,
   keyField,
+  isLoading,
   renderForm,
   onCreate,
   onUpdate,
   onDelete,
+  filters,
   emptyState,
 }: ListPageTemplateProps<T>) {
   const { modalOpen, modalMode, modalEntity, modalData, openModal, closeModal, addToast } = useAppStore();
@@ -72,10 +76,12 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   };
 
   const handleView = (row: T) => {
+    console.log('Viewing row:', row);
     openModal('view', modalEntity || 'organization', row);
   };
 
   const handleEdit = (row: T) => {
+    console.log('Editing row:', row);
     openModal('edit', modalEntity || 'organization', row);
   };
 
@@ -100,7 +106,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
       onCreate(data as T);
       addToast({ message: 'Item created successfully', type: 'success' });
     } else if (modalMode === 'edit' && modalData && onUpdate) {
-      onUpdate(String(modalData[keyField]), data as Partial<T>);
+      onUpdate(String((modalData as T)[keyField]), data as Partial<T>);
       addToast({ message: 'Item updated successfully', type: 'success' });
     }
     closeModal();
@@ -108,7 +114,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
 
   const handleDeleteFromModal = () => {
     if (modalData && onDelete) {
-      onDelete(String(modalData[keyField as string]));
+      onDelete(String((modalData as T)[keyField]));
       addToast({ message: 'Item deleted successfully', type: 'success' });
       closeModal();
     }
@@ -132,6 +138,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
         data={paginatedData}
         columns={columns}
         keyField={keyField}
+        isLoading={isLoading}
         searchPlaceholder={`Search ${title.toLowerCase()}...`}
         onSearch={handleSearch}
         onPageChange={handlePageChange}
@@ -139,6 +146,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        filters={filters}
         pagination={{
           currentPage,
           totalPages,
@@ -158,7 +166,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
         onSave={handleSave}
         onDelete={handleDeleteFromModal}
       >
-        {renderForm && renderForm({ data: modalData, mode: modalMode })}
+        {({ activeTab }) => renderForm && renderForm({ data: modalData, mode: modalMode, activeTab })}
       </ModalDrawer>
     </>
   );

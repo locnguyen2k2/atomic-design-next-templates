@@ -17,9 +17,10 @@ interface HeaderProps {
   onThemeToggle: () => void;
   onSearch: (query: string) => void;
   user: User;
+  onMobileToggle?: () => void;
 }
 
-export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user }: HeaderProps) {
+export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMobileToggle }: HeaderProps) {
   return (
     <header className="header fixed top-0 right-0 left-0 h-16 bg-bg-elevated border-b border-border z-30 ml-[260px]">
       <div className="flex items-center justify-between h-full px-6">
@@ -48,6 +49,7 @@ export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user }: Hea
         {/* Center: Global Search */}
         <div className="hidden md:block w-80">
           <SearchForm
+            id="globalSearch"
             placeholder="Search... (⌘K)"
             onSearch={onSearch}
           />

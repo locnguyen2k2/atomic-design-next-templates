@@ -22,4 +22,7 @@ export type IconName =
   | 'warning'
   | 'info'
   | 'trend-up'
-  | 'history';
+  | 'history'
+  | 'mobile'
+  | 'laptop'
+  | 'arrow-right-from-bracket';

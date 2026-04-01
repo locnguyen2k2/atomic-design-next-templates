@@ -3,8 +3,15 @@ import type { Project, PaginatedResponse, ListParams } from '@/types';
 
 export const projectsApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<Project>> => {
-    const { data } = await apiClient.get('/projects', { params });
-    return data;
+    const { data: response } = await apiClient.get('/projects', { params });
+    const data = response?.data;
+    return {
+      data: data?.projects || [],
+      total: data?.total || 0,
+      page: data?.page || 1,
+      limit: data?.limit || 10,
+      totalPages: data?.totalPages || 1,
+    };
   },
 
   get: async (id: string): Promise<Project> => {

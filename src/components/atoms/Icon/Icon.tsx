@@ -23,6 +23,9 @@ import {
   faCircleInfo,
   faArrowTrendUp,
   faClockRotateLeft,
+  faMobile,
+  faLaptop,
+  faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { IconName } from '@/types/icon';
@@ -53,6 +56,9 @@ const iconMap: Record<IconName, any> = {
   'info': faCircleInfo,
   'trend-up': faArrowTrendUp,
   'history': faClockRotateLeft,
+  'mobile': faMobile,
+  'laptop': faLaptop,
+  'arrow-right-from-bracket': faArrowRightFromBracket,
 };
 
 interface IconProps {

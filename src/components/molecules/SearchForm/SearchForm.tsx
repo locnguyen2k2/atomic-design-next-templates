@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 
 interface SearchFormProps {
+  id?: string;
   placeholder?: string;
   defaultValue?: string;
   onSearch: (value: string) => void;
@@ -11,6 +12,7 @@ interface SearchFormProps {
 }
 
 export function SearchForm({ 
+  id,
   placeholder = 'Search...', 
   defaultValue = '',
   onSearch,
@@ -35,6 +37,7 @@ export function SearchForm({
         className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
       />
       <input
+        id={id}
         type="text"
         value={value}
         onChange={handleChange}

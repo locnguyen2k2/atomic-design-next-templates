@@ -3,6 +3,7 @@
 import { Badge } from '@/components/atoms/Badge';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
+import { Skeleton } from '@/components/atoms/Skeleton';
 import { SearchForm } from '@/components/molecules/SearchForm';
 import { Pagination } from '@/components/molecules/Pagination';
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ interface DataTableProps<T> {
   data: T[];
   columns: Column<T>[];
   keyField: keyof T;
+  isLoading?: boolean;
   searchPlaceholder?: string;
   onSearch?: (query: string) => void;
   onSort?: (field: string, order: 'asc' | 'desc') => void;
@@ -46,6 +48,7 @@ export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   keyField,
+  isLoading,
   searchPlaceholder,
   onSearch,
   onSort,
@@ -107,7 +110,23 @@ export function DataTable<T extends Record<string, unknown>>({
             </tr>
           </thead>
           <tbody>
-            {data.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={`skeleton-${i}`} className="border-b border-border-subtle">
+                  {columns.map((col, j) => (
+                    <td key={`skeleton-cell-${i}-${j}`} className="px-4 py-4">
+                      <Skeleton className="h-4 w-full max-w-[120px]" />
+                    </td>
+                  ))}
+                  <td className="px-4 py-4">
+                    <div className="flex justify-end gap-2">
+                      <Skeleton className="h-8 w-8 rounded-lg" />
+                      <Skeleton className="h-8 w-8 rounded-lg" />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length + 1} className="p-0">
                   {emptyState && (

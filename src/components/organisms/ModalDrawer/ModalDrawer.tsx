@@ -17,7 +17,7 @@ interface ModalDrawerProps {
   onClose: () => void;
   onSave: (data: Record<string, unknown>) => void;
   onDelete?: () => void;
-  children: React.ReactNode;
+  children: React.ReactNode | ((props: { activeTab: string }) => React.ReactNode);
 }
 
 export function ModalDrawer({
@@ -75,96 +75,97 @@ export function ModalDrawer({
   if (!open) return null;
 
   return (
-    <div className="modal-overlay fixed inset-0 bg-black/60 z-50" onClick={onClose}>
+  <div className={cn("modal-overlay", open && "open")} onClick={onClose}>
+    <div
+      ref={drawerRef}
+      className="modal-drawer"
+      style={{ width: `${width}px` }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Drag Handle */}
       <div
-        ref={drawerRef}
-        className={cn(
-          'modal-drawer fixed right-0 top-0 h-full bg-bg-elevated border-l border-border',
-          'transform transition-transform duration-300',
-          open ? 'translate-x-0' : 'translate-x-full'
-        )}
-        style={{ width: `${width}px` }}
-        onClick={(e) => e.stopPropagation()}
+        className="modal-drag-handle"
+        onMouseDown={() => setIsDragging(true)}
       >
-        {/* Drag Handle */}
-        <div
-          className="modal-drag-handle absolute left-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary/20"
-          onMouseDown={() => setIsDragging(true)}
-        />
+        <div className="modal-drag-bar"></div>
+      </div>
 
-        {/* Header */}
-        <div className="modal-header flex items-center justify-between p-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <Badge variant={mode === 'create' ? 'success' : mode === 'edit' ? 'warning' : 'primary'}>
-              {mode.toUpperCase()}
-            </Badge>
-            <div>
-              <h2 className="modal-title text-lg font-semibold">
-                {mode === 'create' ? `Create ${entity}` : data?.name || entity}
-              </h2>
-              <p className="modal-subtitle text-sm text-text-muted">
-                {mode === 'create' ? `Fill in details to create a new ${entity}` : data?.slug || ''}
-              </p>
-            </div>
+      {/* Header */}
+      <div className="modal-header">
+        <div className="modal-header-left">
+          <span className={cn(
+            "modal-mode-badge",
+            mode === 'create' ? 'mode-create' : 
+            mode === 'edit' ? 'mode-edit' : 'mode-view'
+          )}>
+            {mode.toUpperCase()}
+          </span>
+          <div>
+            <h2 className="modal-title">
+              {mode === 'create' ? `Create ${entity}` : data?.name ? String(data.name) : JSON.stringify(entity)}
+            </h2>
+            <p className="modal-subtitle">
+              {mode === 'create' ? 'Fill in details to create a new entity' : 'Edit entity details'}
+            </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <Icon name="xmark" />
-          </Button>
         </div>
+        <button className="modal-close" onClick={onClose}>
+          <Icon name="xmark" />
+        </button>
+      </div>
 
-        {/* Tabs */}
-        <div className="modal-tabs flex border-b border-border">
-          {(['general', 'metadata'] as const).map((tab) => (
-            <button
-              key={tab}
-              className={cn(
-                'modal-tab px-4 py-3 text-sm font-medium border-b-2 -mb-px',
-                activeTab === tab
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              )}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
-          ))}
-          {entity === 'role' && (
-            <button
-              className={cn(
-                'modal-tab px-4 py-3 text-sm font-medium border-b-2 -mb-px',
-                activeTab === 'permissions'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-text-muted hover:text-text-primary'
-              )}
-              onClick={() => setActiveTab('permissions')}
-            >
-              Permissions
-            </button>
-          )}
-        </div>
+      {/* Tabs */}
+      <div className="modal-tabs">
+        {(['general', 'metadata'] as const).map((tab) => (
+          <button
+            key={tab}
+            className={cn(
+              'modal-tab',
+              activeTab === tab && 'active'
+            )}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
+        {entity === 'role' && (
+          <button
+            className={cn(
+              'modal-tab',
+              activeTab === 'permissions' && 'active'
+            )}
+            onClick={() => setActiveTab('permissions')}
+          >
+            Permissions
+          </button>
+        )}
+      </div>
 
-        {/* Body */}
-        <div className="modal-body flex-1 overflow-y-auto p-4">
-          {children}
-        </div>
+      {/* Body */}
+      <div className="modal-body">
+        {typeof children === 'function' ? children({ activeTab }) : children}
+      </div>
 
-        {/* Footer */}
-        <div className="modal-footer flex items-center justify-end gap-3 p-4 border-t border-border">
-          <Button variant="secondary" onClick={onClose}>
+      {/* Footer */}
+      <div className="modal-footer">
+        <div></div> {/* Left side empty for spacing */}
+        <div className="modal-footer-right">
+          <button className="modal-btn-secondary" onClick={onClose}>
             Cancel
-          </Button>
+          </button>
           {mode === 'edit' && onDelete && (
-            <Button variant="danger" onClick={onDelete}>
+            <button className="modal-btn-danger" onClick={onDelete}>
               <Icon name="trash" /> Delete
-            </Button>
+            </button>
           )}
           {mode !== 'view' && (
-            <Button onClick={() => onSave(data || {})} disabled={mode === 'view'}>
+            <button className="modal-btn-primary" onClick={() => onSave(data || {})}>
               {mode === 'create' ? 'Create' : 'Save'}
-            </Button>
+            </button>
           )}
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

@@ -36,6 +36,8 @@ interface SidebarProps {
   onOrgSwitch: (orgId: string) => void;
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 export function Sidebar({
@@ -44,18 +46,32 @@ export function Sidebar({
   onOrgSwitch,
   collapsed,
   onToggle,
+  mobileOpen,
+  onMobileClose,
 }: SidebarProps) {
   const [orgDropdownOpen, setOrgDropdownOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <aside
-      className={cn(
-        'sidebar fixed left-0 top-0 h-full bg-bg-elevated border-r border-border z-40',
-        'transition-all duration-300',
-        collapsed ? 'w-[72px]' : 'w-[260px]'
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden transition-opacity duration-300"
+          onClick={onMobileClose}
+        />
       )}
-    >
+
+      <aside
+        className={cn(
+          'sidebar fixed left-0 top-0 h-full bg-bg-elevated border-r border-border z-50',
+          'transition-all duration-300 ease-in-out',
+          // Desktop sizing
+          collapsed ? 'lg:w-[72px]' : 'lg:w-[260px]',
+          // Mobile positioning
+          mobileOpen ? 'translate-x-0 w-[260px]' : '-translate-x-full lg:translate-x-0'
+        )}
+      >
       {/* Logo */}
       <div className="sidebar-header flex items-center gap-3 p-4 border-b border-border">
         {!collapsed && (
@@ -154,6 +170,7 @@ export function Sidebar({
         </Link>
       </div>
     </aside>
+    </>
   );
 }
 

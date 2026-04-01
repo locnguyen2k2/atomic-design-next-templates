@@ -3,8 +3,15 @@ import type { Feature, PaginatedResponse, ListParams } from '@/types';
 
 export const featuresApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<Feature>> => {
-    const { data } = await apiClient.get('/features', { params });
-    return data;
+    const { data: response } = await apiClient.get('/features', { params });
+    const data = response?.data;
+    return {
+      data: data?.features || [],
+      total: data?.total || 0,
+      page: data?.page || 1,
+      limit: data?.limit || 10,
+      totalPages: data?.totalPages || 1,
+    };
   },
 
   get: async (id: string): Promise<Feature> => {
