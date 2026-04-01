@@ -22,7 +22,7 @@ export default function DashboardPage() {
         <div className="page-header-info">
           <h1 className="page-title text-2xl font-bold text-text-primary tracking-tight">Dashboard</h1>
           <p className="page-subtitle text-text-muted mt-1 text-sm">
-            Welcome back! Here's what's happening across your systems.
+            Welcome back! Here&apos;s what&apos;s happening across your systems.
           </p>
         </div>
         <div className="page-header-actions">

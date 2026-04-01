@@ -82,7 +82,7 @@ export default function ProfilePage() {
           <Card>
             <Card.Header>
               <Card.Title>Active Sessions</Card.Title>
-              <Card.Subtitle>Locations and browsers where you're currently logged in.</Card.Subtitle>
+              <Card.Subtitle>Locations and browsers where you&apos;re currently logged in.</Card.Subtitle>
             </Card.Header>
             <Card.Body className="p-0">
               <div className="flex flex-col">
