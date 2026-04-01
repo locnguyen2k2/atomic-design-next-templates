@@ -83,8 +83,6 @@ export function FeatureForm({ data, mode, onChange }: FeatureFormProps) {
 
       <div className="flex items-center gap-2 py-2">
         <Checkbox
-          id="is_enabled"
-          name="is_enabled"
           checked={formData.is_enabled}
           onChange={(checked) => {
             const newData = { ...formData, is_enabled: checked };

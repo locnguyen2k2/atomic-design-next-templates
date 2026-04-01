@@ -1,7 +1,8 @@
 'use client';
 
-import { Icon, type IconName } from '@/components/atoms/Icon';
+import { Icon } from '@/components/atoms/Icon';
 import { cn } from '@/lib/utils';
+import { IconName } from '@/types';
 
 export interface Activity {
   id: string;

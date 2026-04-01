@@ -1,8 +1,9 @@
 'use client';
 
-import { Icon, type IconName } from '@/components/atoms/Icon';
+import { Icon } from '@/components/atoms/Icon';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import type { IconName } from '@/types/icon';
 
 interface QuickActionCardProps {
   icon: IconName;

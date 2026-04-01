@@ -24,8 +24,8 @@ export function usePermissions() {
   const togglePermission = (roleId: string, resource: string, action: string) => {
     const key = `${resource}:${action}`;
     setMatrix(prev => {
-      const rolePerms = { ...prev[roleId] } || {};
-      rolePerms[key] = !rolePerms[key];
+      const rolePerms = prev[roleId] || {};
+      rolePerms[key] = !rolePerms[key]; 
       return { ...prev, [roleId]: rolePerms };
     });
   };

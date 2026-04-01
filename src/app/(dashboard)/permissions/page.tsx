@@ -51,13 +51,13 @@ export default function PermissionsPage() {
               Rows = resources · Columns = roles · Click checkbox to grant/revoke
             </Card.Subtitle>
           </div>
-          <Button variant="ghost" size="sm" href="/roles" className="h-8 text-xs">
+          <Button variant="ghost" size="sm" className="h-8 text-xs">
             <Icon name="shield" className="mr-1.5" /> Manage Roles
           </Button>
         </Card.Header>
         <Card.Body className="p-0">
           <PermissionMatrix
-            roles={roles || [
+            roles={roles?.data || [
               { id: 'role_1', name: 'Super Admin' },
               { id: 'role_2', name: 'Developer' }
             ]}
@@ -102,7 +102,7 @@ export default function PermissionsPage() {
               Changes to the matrix take effect immediately for all users with the modified roles.
             </p>
             <div className="mt-4 flex items-center gap-2 text-xs text-warning bg-warning-dim p-3 rounded-lg border border-warning/20">
-              <Icon name="triangle-exclamation" />
+              <Icon name="warning" />
               <span>Backend sync is currently simulated. Reloading will reset changes.</span>
             </div>
           </Card.Body>
