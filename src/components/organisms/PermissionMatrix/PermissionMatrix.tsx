@@ -1,12 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Checkbox } from '@/components/atoms/Checkbox';
+import { Icon } from '@/components/atoms/Icon';
+import { Badge } from '@/components/atoms/Badge';
 import { cn } from '@/lib/utils';
+import type { IconName } from '@/types/icon';
 
 interface Role {
   id: string;
   name: string;
+  slug?: string;
 }
 
 interface PermissionMatrixProps {
@@ -14,8 +17,20 @@ interface PermissionMatrixProps {
   resources: string[];
   actions: string[];
   matrix: Record<string, Record<string, boolean>>;
-  onToggle: (role: string, resource: string, action: string) => void;
+  onToggle: (roleId: string, resource: string, action: string) => void;
 }
+
+const getResourceIcon = (res: string): IconName => {
+  const map: Record<string, IconName> = {
+    organizations: 'building',
+    projects: 'folder-open',
+    features: 'flag',
+    roles: 'shield',
+    users: 'users',
+    permissions: 'key'
+  };
+  return map[res] || 'circle';
+};
 
 export function PermissionMatrix({
   roles,
@@ -26,60 +41,71 @@ export function PermissionMatrix({
 }: PermissionMatrixProps) {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
+      <table className="permission-table">
         <thead>
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider border-b border-border">
-              Resource / Action
-            </th>
+            <th>Resource / Action</th>
             {roles.map((role) => (
-              <th
-                key={role.id}
-                className="px-4 py-3 text-center text-xs font-medium text-text-muted uppercase tracking-wider border-b border-border"
-                colSpan={actions.length}
-              >
-                {role.name}
+              <th key={role.id}>
+                <div className="flex flex-col items-center gap-1">
+                  <Badge variant="violet" className="text-[10px] px-2 py-0.5">
+                    {role.name}
+                  </Badge>
+                  {role.slug && (
+                    <span className="text-[9px] font-mono text-text-muted">
+                      {role.slug}
+                    </span>
+                  )}
+                </div>
               </th>
-            ))}
-          </tr>
-          <tr>
-            <th className="px-4 py-2 border-b border-border-subtle"></th>
-            {roles.map((role) => (
-              <React.Fragment key={role.id}>
-                {actions.map((action) => (
-                  <th
-                    key={`${role.id}-${action}`}
-                    className="px-2 py-2 text-center text-xs font-medium text-text-muted border-b border-border-subtle border-r border-border-subtle last:border-r-0"
-                  >
-                    {action}
-                  </th>
-                ))}
-              </React.Fragment>
             ))}
           </tr>
         </thead>
         <tbody>
           {resources.map((resource) => (
-            <tr key={resource}>
-              <td className="px-4 py-3 text-sm font-medium text-text-primary border-b border-border-subtle">
-                {resource}
-              </td>
-              {roles.map((role) => (
-                <React.Fragment key={`${resource}-${role.id}`}>
-                  {actions.map((action) => (
-                    <td
-                      key={`${resource}-${role.id}-${action}`}
-                      className="px-2 py-3 text-center border-b border-border-subtle border-r border-border-subtle last:border-r-0"
-                    >
-                      <Checkbox
-                        checked={matrix[role.id]?.[`${resource}:${action}`] || false}
-                        onChange={() => onToggle(role.id, resource, action)}
-                      />
-                    </td>
-                  ))}
-                </React.Fragment>
+            <React.Fragment key={resource}>
+              {/* Resource Header Row */}
+              <tr className="bg-bg-elevated">
+                <td className="p-2.5 font-bold text-sm text-text-primary border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Icon 
+                      name={getResourceIcon(resource)} 
+                      className="text-primary" 
+                      size="sm" 
+                    />
+                    {resource.charAt(0).toUpperCase() + resource.slice(1)}
+                  </div>
+                </td>
+                {roles.map((role) => (
+                  <td key={`${resource}-${role.id}`} className="border-b border-border"></td>
+                ))}
+              </tr>
+              
+              {/* Action Rows */}
+              {actions.map((action) => (
+                <tr key={`${resource}-${action}`}>
+                  <td className="pl-8">
+                    <Badge variant="muted" className="text-[10px] font-medium opacity-70">
+                      {action}
+                    </Badge>
+                  </td>
+                  {roles.map((role) => {
+                    const isChecked = matrix[role.id]?.[`${resource}:${action}`] || false;
+                    return (
+                      <td key={`${resource}-${role.id}-${action}`}>
+                        <div
+                          className={cn("perm-check", isChecked && "checked")}
+                          onClick={() => onToggle(role.id, resource, action)}
+                          title={`${isChecked ? 'Revoke' : 'Grant'} ${action} on ${resource} for ${role.name}`}
+                        >
+                          <Icon name="check" size="sm" />
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
               ))}
-            </tr>
+            </React.Fragment>
           ))}
         </tbody>
       </table>

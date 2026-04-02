@@ -5,28 +5,14 @@ import { useState } from 'react';
 export function usePermissions() {
   const [resources] = useState(['organizations', 'projects', 'features', 'roles', 'users']);
   const [actions] = useState(['read', 'create', 'update', 'delete']);
-  const [matrix, setMatrix] = useState<Record<string, Record<string, boolean>>>({
-    'role_1': {
-      'organizations:read': true,
-      'organizations:create': true,
-      'organizations:update': true,
-      'organizations:delete': true,
-      'projects:read': true,
-      'projects:create': true,
-    },
-    'role_2': {
-      'organizations:read': true,
-      'projects:read': true,
-      'features:read': true,
-    }
-  });
+  const [matrix, setMatrix] = useState<Record<string, Record<string, boolean>>>({});
 
   const togglePermission = (roleId: string, resource: string, action: string) => {
     const key = `${resource}:${action}`;
     setMatrix(prev => {
       const rolePerms = prev[roleId] || {};
-      rolePerms[key] = !rolePerms[key]; 
-      return { ...prev, [roleId]: rolePerms };
+      const newRolePerms = { ...rolePerms, [key]: !rolePerms[key] };
+      return { ...prev, [roleId]: newRolePerms };
     });
   };
 

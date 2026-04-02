@@ -256,29 +256,74 @@ body {
 
 /* Checkbox styles */
 .perm-check {
-  width: 1.5rem;
-  height: 1.5rem;
-  border-radius: 0.25rem;
-  border: 1px solid var(--border);
-  display: flex;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-md);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
-  background: transparent;
+  font-size: 10px;
+  color: transparent;
+  transition: all var(--transition);
+  margin: 0 auto;
 }
 
 .perm-check:hover {
   border-color: var(--primary);
+  background: var(--primary-dim);
 }
 
 .perm-check.checked {
   background: var(--primary);
   border-color: var(--primary);
+  color: #fff;
 }
 
 .perm-check:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Permission Matrix */
+.permission-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.permission-table th {
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.permission-table th:first-child {
+  text-align: left;
+}
+
+.permission-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  text-align: center;
+}
+
+.permission-table td:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.permission-table tr:hover td {
+  background: var(--bg-hover);
 }
 
 /* Table styles */

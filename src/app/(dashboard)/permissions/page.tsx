@@ -8,6 +8,7 @@ import { Icon } from '@/components/atoms/Icon';
 import { usePermissions } from '@/hooks/usePermissions';
 import { useRoles } from '@/hooks/useRoles';
 import { useAppStore } from '@/stores';
+import Link from 'next/link';
 
 export default function PermissionsPage() {
   const { resources, actions, matrix, togglePermission, saveChanges } = usePermissions();
@@ -16,7 +17,7 @@ export default function PermissionsPage() {
 
   const handleSave = async () => {
     await saveChanges();
-    addToast({ message: 'Permissions saved successfully', type: 'success' });
+    addToast({ message: 'Permission changes saved locally', type: 'success' });
   };
 
   return (
@@ -24,16 +25,19 @@ export default function PermissionsPage() {
       {/* Page Header */}
       <div className="page-header flex items-start justify-between mb-8">
         <div className="page-header-info">
-          <h1 className="page-title flex items-center gap-3 text-2xl font-bold text-text-primary">
-            <Icon name="key" className="text-warning" />
+          <h1 className="page-title flex items-center gap-3 text-2xl font-bold text-text-primary tracking-tight">
+            <span className="text-warning">
+              <Icon name="key" />
+            </span>
             Permissions
           </h1>
           <p className="page-subtitle text-text-muted mt-1 text-sm">
             Configure permissions per role across all resources. Click cells to toggle access.
           </p>
         </div>
-        <div className="page-header-actions flex gap-2">
-          <Badge variant="warning">
+        <div className="page-header-actions flex items-center gap-2">
+          <Badge variant="warning" className="gap-1.5">
+            <Icon name="triangle-exclamation" size="sm" />
             Beta — API endpoint pending
           </Badge>
           <Button size="sm" onClick={handleSave} className="h-9">
@@ -44,23 +48,22 @@ export default function PermissionsPage() {
 
       {/* Permission Matrix */}
       <Card className="mb-8">
-        <Card.Header className="flex items-center justify-between">
+        <Card.Header className="flex items-center justify-between border-b border-border px-5 py-4">
           <div>
-            <Card.Title>Permission Matrix</Card.Title>
-            <Card.Subtitle>
-              Rows = resources · Columns = roles · Click checkbox to grant/revoke
+            <Card.Title className="text-sm font-bold">Permission Matrix</Card.Title>
+            <Card.Subtitle className="text-xs text-text-muted mt-0.5">
+              Rows = resources + actions · Columns = roles · Click checkbox to grant/revoke
             </Card.Subtitle>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 text-xs">
-            <Icon name="shield" className="mr-1.5" /> Manage Roles
-          </Button>
+          <Link href="/roles">
+            <Button variant="ghost" size="sm" className="h-8 text-xs">
+              <Icon name="shield" className="mr-1.5" /> Manage Roles
+            </Button>
+          </Link>
         </Card.Header>
-        <Card.Body className="p-0">
+        <Card.Body className="p-0 overflow-x-auto">
           <PermissionMatrix
-            roles={roles?.data || [
-              { id: 'role_1', name: 'Super Admin' },
-              { id: 'role_2', name: 'Developer' }
-            ]}
+            roles={roles?.data || []}
             resources={resources}
             actions={actions}
             matrix={matrix}
@@ -70,44 +73,28 @@ export default function PermissionsPage() {
       </Card>
 
       {/* Legend & Help */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <Card.Header>
-            <Card.Title>Legend</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3 text-sm text-text-secondary">
-                <div className="w-6 h-6 rounded border border-primary bg-primary flex items-center justify-center">
-                  <Icon name="check" className="text-white text-xs" />
-                </div>
-                <span>Access Granted</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-text-secondary">
-                <div className="w-6 h-6 rounded border border-border flex items-center justify-center">
-                </div>
-                <span>Access Denied</span>
-              </div>
+      <Card>
+        <Card.Header className="border-b border-border px-5 py-4">
+          <Card.Title className="text-sm font-bold">Legend</Card.Title>
+        </Card.Header>
+        <Card.Body className="flex flex-wrap items-center gap-6 py-4">
+          <div className="flex items-center gap-2 text-xs text-text-secondary">
+            <div className="perm-check checked pointer-events-none">
+              <Icon name="check" size="sm" />
             </div>
-          </Card.Body>
-        </Card>
-
-        <Card>
-          <Card.Header>
-            <Card.Title>System Information</Card.Title>
-          </Card.Header>
-          <Card.Body>
-            <p className="text-sm text-text-muted leading-relaxed">
-              Permissions are additive. If a user has multiple roles, they gain the combined permissions of all assigned roles. 
-              Changes to the matrix take effect immediately for all users with the modified roles.
-            </p>
-            <div className="mt-4 flex items-center gap-2 text-xs text-warning bg-warning-dim p-3 rounded-lg border border-warning/20">
-              <Icon name="warning" />
-              <span>Backend sync is currently simulated. Reloading will reset changes.</span>
+            <span>Access Granted</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-text-secondary">
+            <div className="perm-check pointer-events-none">
             </div>
-          </Card.Body>
-        </Card>
-      </div>
+            <span>Access Denied</span>
+          </div>
+          <div className="ml-auto flex items-center gap-2 text-xs text-text-muted">
+            <Icon name="circle-info" className="text-primary/60" />
+            <span>Changes are saved to local state only. Backend permission API is not yet available.</span>
+          </div>
+        </Card.Body>
+      </Card>
     </div>
   );
 }
