@@ -18,15 +18,27 @@ interface HeaderProps {
   onSearch: (query: string) => void;
   user: User;
   onMobileToggle?: () => void;
+  onSidebarToggle?: () => void;
+  sidebarCollapsed?: boolean;
 }
 
-export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMobileToggle }: HeaderProps) {
+export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMobileToggle, onSidebarToggle, sidebarCollapsed }: HeaderProps) {
   return (
-    <header className="header fixed top-0 right-0 left-0 h-16 bg-bg-elevated border-b border-border z-30 ml-[260px]">
+    <header className={`header fixed top-0 right-0 left-0 h-16 bg-bg-elevated border-b border-border z-30 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-[68px]' : 'lg:ml-[260px]'}`}>
       <div className="flex items-center justify-between h-full px-6">
-        {/* Left: Breadcrumb */}
+        {/* Left: Sidebar Toggle + Breadcrumb */}
         <div className="flex items-center gap-4">
-          <button className="lg:hidden p-2 rounded-lg hover:bg-bg-surface">
+          {/* <button 
+            onClick={onSidebarToggle}
+            className="header-sidebar-toggle hidden lg:flex w-9 h-9 bg-transparent border-none rounded-lg items-center justify-center transition-all duration-200 hover:bg-bg-surface hover:scale-105 text-text-primary"
+          >
+            <Icon name="menu" />
+          </button>
+           */}
+          <button 
+            onClick={onMobileToggle}
+            className="lg:hidden w-9 h-9 bg-transparent border-none rounded-lg flex items-center justify-center transition-all duration-200 hover:bg-bg-surface hover:scale-105"
+          >
             <Icon name="menu" />
           </button>
           

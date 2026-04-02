@@ -78,7 +78,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
       <div
         className={cn(
           'flex-1 transition-all duration-300 min-w-0',
-          sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[260px]'
+          sidebarCollapsed ? 'lg:ml-[68px]' : 'lg:ml-[260px]'
         )}
       >
         <Header
@@ -88,6 +88,8 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
           onSearch={handleSearch}
           user={user}
           onMobileToggle={() => setMobileSidebarOpen(true)}
+          onSidebarToggle={toggleSidebar}
+          sidebarCollapsed={sidebarCollapsed}
         />
         <main className="pt-16 p-4 sm:p-6 min-h-screen">
           <div className="max-w-[1400px] mx-auto">

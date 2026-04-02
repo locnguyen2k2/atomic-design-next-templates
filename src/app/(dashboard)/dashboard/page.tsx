@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { StatCard } from '@/components/molecules/StatCard';
 import { Card } from '@/components/atoms/Card';
 import { Badge } from '@/components/atoms/Badge';
@@ -8,12 +9,32 @@ import { Icon } from '@/components/atoms/Icon';
 import { QuickActionCard } from '@/components/molecules/QuickActionCard';
 import { ActivityList } from '@/components/molecules/ActivityList';
 import { WeeklyChart } from '@/components/molecules/WeeklyChart';
+import { ModalDrawer } from '@/components/organisms/ModalDrawer';
+import { OrganizationForm } from '@/components/molecules/OrganizationForm';
+import { ProjectForm } from '@/components/molecules/ProjectForm';
+import { FeatureForm } from '@/components/molecules/FeatureForm';
+import { RoleForm } from '@/components/molecules/RoleForm';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useActivity } from '@/hooks/useActivity';
 
 export default function DashboardPage() {
   const { stats, isLoading } = useDashboardStats();
   const { activities } = useActivity();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalEntity, setModalEntity] = useState<'organization' | 'project' | 'feature' | 'role' | null>(null);
+  const [modalData, setModalData] = useState<any>(null);
+
+  const openModal = (entity: 'organization' | 'project' | 'feature' | 'role') => {
+    setModalEntity(entity);
+    setModalData({});
+    setModalOpen(true);
+  };
+
+  const handleSave = (data: any) => {
+    console.log(`Saving ${modalEntity}:`, data);
+    setModalOpen(false);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -125,15 +146,87 @@ export default function DashboardPage() {
         </Card.Header>
         <Card.Body>
           <div className="quick-actions-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <QuickActionCard icon="building" label="New Org" color="primary" href="/organizations" />
-            <QuickActionCard icon="folder-open" label="New Project" color="accent" href="/projects" />
-            <QuickActionCard icon="flag" label="New Feature" color="success" href="/features" />
-            <QuickActionCard icon="shield" label="New Role" color="violet" href="/roles" />
+            <QuickActionCard
+              icon="building"
+              label="New Org"
+              color="primary"
+              onClick={() => openModal('organization')}
+            />
+            <QuickActionCard
+              icon="folder-open"
+              label="New Project"
+              color="accent"
+              onClick={() => openModal('project')}
+            />
+            <QuickActionCard
+              icon="flag"
+              label="New Feature"
+              color="success"
+              onClick={() => openModal('feature')}
+            />
+            <QuickActionCard
+              icon="shield"
+              label="New Role"
+              color="violet"
+              onClick={() => openModal('role')}
+            />
             <QuickActionCard icon="users" label="Manage Users" color="warning" href="/profile" />
             <QuickActionCard icon="key" label="Permissions" color="danger" href="/permissions" />
           </div>
         </Card.Body>
       </Card>
+
+      {/* Modals */}
+      {modalEntity && (
+        <ModalDrawer
+          open={modalOpen}
+          mode="create"
+          entity={modalEntity}
+          data={modalData}
+          onClose={() => setModalOpen(false)}
+          onSave={handleSave}
+        >
+          {({ activeTab }) => {
+            switch (modalEntity) {
+              case 'organization':
+                return (
+                  <OrganizationForm
+                    mode="create"
+                    data={modalData}
+                    onChange={setModalData}
+                  />
+                );
+              case 'project':
+                return (
+                  <ProjectForm
+                    mode="create"
+                    data={modalData}
+                    onChange={setModalData}
+                  />
+                );
+              case 'feature':
+                return (
+                  <FeatureForm
+                    mode="create"
+                    data={modalData}
+                    onChange={setModalData}
+                  />
+                );
+              case 'role':
+                return (
+                  <RoleForm
+                    mode="create"
+                    activeTab={activeTab}
+                    data={modalData}
+                    onChange={setModalData}
+                  />
+                );
+              default:
+                return null;
+            }
+          }}
+        </ModalDrawer>
+      )}
     </div>
   );
 }

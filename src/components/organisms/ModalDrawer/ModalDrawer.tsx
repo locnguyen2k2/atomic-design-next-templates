@@ -116,18 +116,24 @@ export function ModalDrawer({
 
       {/* Tabs */}
       <div className="modal-tabs">
-        {(['general', 'metadata'] as const).map((tab) => (
-          <button
-            key={tab}
-            className={cn(
-              'modal-tab',
-              activeTab === tab && 'active'
-            )}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+        <button
+          className={cn(
+            'modal-tab',
+            activeTab === 'general' && 'active'
+          )}
+          onClick={() => setActiveTab('general')}
+        >
+          <Icon name="circle-info" /> General
+        </button>
+        <button
+          className={cn(
+            'modal-tab',
+            activeTab === 'metadata' && 'active'
+          )}
+          onClick={() => setActiveTab('metadata')}
+        >
+          <Icon name="history" /> Metadata
+        </button>
         {entity === 'role' && (
           <button
             className={cn(
@@ -136,7 +142,7 @@ export function ModalDrawer({
             )}
             onClick={() => setActiveTab('permissions')}
           >
-            Permissions
+            <Icon name="key" /> Permissions
           </button>
         )}
       </div>
@@ -148,19 +154,20 @@ export function ModalDrawer({
 
       {/* Footer */}
       <div className="modal-footer">
-        <div></div> {/* Left side empty for spacing */}
-        <div className="modal-footer-right">
-          <button className="modal-btn-secondary" onClick={onClose}>
-            Cancel
-          </button>
+        <div className="modal-footer-left">
           {mode === 'edit' && onDelete && (
             <button className="modal-btn-danger" onClick={onDelete}>
               <Icon name="trash" /> Delete
             </button>
           )}
+        </div>
+        <div className="modal-footer-right">
+          <button className="modal-btn-secondary" onClick={onClose}>
+            <Icon name="xmark" /> Cancel
+          </button>
           {mode !== 'view' && (
             <button className="modal-btn-primary" onClick={() => onSave(data || {})}>
-              {mode === 'create' ? 'Create' : 'Save'}
+              <Icon name="check" /> {mode === 'create' ? 'Create' : 'Save'}
             </button>
           )}
         </div>

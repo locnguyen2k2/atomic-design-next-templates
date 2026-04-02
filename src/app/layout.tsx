@@ -1,8 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
 import './globals.css'
-import { QueryProvider } from '@/providers'
-import { ThemeProvider } from '@/providers'
+import { QueryProvider, ThemeProvider, ToastProvider } from '@/providers'
+
+config.autoAddCss = false
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,7 +24,9 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning>
         <QueryProvider>
           <ThemeProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>

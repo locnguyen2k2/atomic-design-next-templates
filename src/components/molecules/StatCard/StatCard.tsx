@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Icon } from '@/components/atoms/Icon';
 import { Badge } from '@/components/atoms/Badge';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,18 @@ export function StatCard({
   hint, 
   className 
 }: StatCardProps) {
+  const barFillRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (barFillRef.current) {
+        barFillRef.current.style.width = `${percentage}%`;
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [percentage]);
+
   return (
     <div className={cn('stat-card animate-fade-up', className)}>
       <div className="stat-card-header">
@@ -40,8 +53,10 @@ export function StatCard({
       
       <div className="stat-card-bar">
         <div 
+          ref={barFillRef}
           className="stat-card-bar-fill" 
-          style={{ width: `${percentage}%` }}
+          style={{ width: 0 }}
+          data-w={percentage}
         />
       </div>
     </div>
