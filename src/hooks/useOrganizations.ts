@@ -1,6 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { organizationsApi } from '@/api';
 import type { Organization, ListParams } from '@/types';
+
+export function useOrganizationsCursor(params: { limit?: number; keyword?: string } = {}) {
+  return useInfiniteQuery({
+    queryKey: ['organizations', 'cursor', params],
+    queryFn: ({ pageParam }) => organizationsApi.listCursor({ ...params, cursor: pageParam }),
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage.data.paginated.has_next ? lastPage.data.paginated.next_cursor : undefined,
+  });
+}
 
 export function useOrganizations(params: ListParams = {}) {
   return useQuery({

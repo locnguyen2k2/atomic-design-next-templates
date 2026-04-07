@@ -37,4 +37,5 @@ export type IconName =
   | 'user'
   | 'settings'
   | 'x'
-  | 'at';
+  | 'at'
+  | 'logout';

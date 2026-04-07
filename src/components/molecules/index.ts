@@ -10,3 +10,4 @@ export { OrganizationForm } from './OrganizationForm';
 export { ProjectForm } from './ProjectForm';
 export { FeatureForm } from './FeatureForm';
 export { RoleForm } from './RoleForm';
+export { SelectWithCursor } from './SelectWithCursor';

@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { StatCard } from '@/components/molecules/StatCard';
-import { Card } from '@/components/atoms/Card';
-import { Badge } from '@/components/atoms/Badge';
-import { Button } from '@/components/atoms/Button';
-import { Icon } from '@/components/atoms/Icon';
-import { QuickActionCard } from '@/components/molecules/QuickActionCard';
-import { ActivityList } from '@/components/molecules/ActivityList';
-import { WeeklyChart } from '@/components/molecules/WeeklyChart';
-import { ModalDrawer } from '@/components/organisms/ModalDrawer';
-import { OrganizationForm } from '@/components/molecules/OrganizationForm';
-import { ProjectForm } from '@/components/molecules/ProjectForm';
-import { FeatureForm } from '@/components/molecules/FeatureForm';
-import { RoleForm } from '@/components/molecules/RoleForm';
-import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { useActivity } from '@/hooks/useActivity';
+import { useState } from "react";
+import { StatCard } from "@/components/molecules/StatCard";
+import { Card } from "@/components/atoms/Card";
+import { Badge } from "@/components/atoms/Badge";
+import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
+import { QuickActionCard } from "@/components/molecules/QuickActionCard";
+import { ActivityList } from "@/components/molecules/ActivityList";
+import { WeeklyChart } from "@/components/molecules/WeeklyChart";
+import { ModalDrawer } from "@/components/organisms/ModalDrawer";
+import { OrganizationForm } from "@/components/molecules/OrganizationForm";
+import { ProjectForm } from "@/components/molecules/ProjectForm";
+import { FeatureForm } from "@/components/molecules/FeatureForm";
+import { RoleForm } from "@/components/molecules/RoleForm";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useActivity } from "@/hooks/useActivity";
 
 export default function DashboardPage() {
   const { stats, isLoading } = useDashboardStats();
   const { activities } = useActivity();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalEntity, setModalEntity] = useState<'organization' | 'project' | 'feature' | 'role' | null>(null);
+  const [modalEntity, setModalEntity] = useState<"organization" | "project" | "feature" | "role" | null>(null);
   const [modalData, setModalData] = useState<any>(null);
 
-  const openModal = (entity: 'organization' | 'project' | 'feature' | 'role') => {
+  const openModal = (entity: "organization" | "project" | "feature" | "role") => {
     setModalEntity(entity);
     setModalData({});
     setModalOpen(true);
@@ -42,9 +42,7 @@ export default function DashboardPage() {
       <div className="page-header flex items-start justify-between mb-8">
         <div className="page-header-info">
           <h1 className="page-title text-2xl font-bold text-text-primary tracking-tight">Dashboard</h1>
-          <p className="page-subtitle text-text-muted mt-1 text-sm">
-            Welcome back! Here&apos;s what&apos;s happening across your systems.
-          </p>
+          <p className="page-subtitle text-text-muted mt-1 text-sm">Welcome back! Here&apos;s what&apos;s happening across your systems.</p>
         </div>
         <div className="page-header-actions">
           <Button variant="secondary" size="sm" className="h-9">
@@ -55,54 +53,12 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8 stagger-children">
-        <StatCard
-          icon="building"
-          label="Organizations"
-          value={stats.organizations}
-          color="primary"
-          percentage={78}
-          hint="+2 this month"
-        />
-        <StatCard
-          icon="folder-open"
-          label="Projects"
-          value={stats.projects}
-          color="accent"
-          percentage={62}
-          hint={`${stats.currentOrgProjects} in current org`}
-        />
-        <StatCard
-          icon="flag"
-          label="Features"
-          value={stats.features}
-          color="success"
-          percentage={55}
-          hint={`${stats.currentOrgFeatures} in current org`}
-        />
-        <StatCard
-          icon="shield"
-          label="Roles"
-          value={stats.roles}
-          color="violet"
-          percentage={90}
-          hint="RBAC configured"
-        />
-        <StatCard
-          icon="users"
-          label="Active Users"
-          value={stats.activeUsers}
-          color="warning"
-          percentage={72}
-          hint="+3 new this week"
-        />
-        <StatCard
-          icon="check"
-          label="API Health"
-          value="99.8%"
-          color="success"
-          percentage={99}
-          hint="All systems normal"
-        />
+        <StatCard icon="building" label="Organizations" value={stats.organizations} color="primary" percentage={78} hint="+2 this month" />
+        <StatCard icon="folder-open" label="Projects" value={stats.projects} color="accent" percentage={62} hint={`${stats.currentOrgProjects} in current org`} />
+        <StatCard icon="flag" label="Features" value={stats.features} color="success" percentage={55} hint={`${stats.currentOrgFeatures} in current org`} />
+        <StatCard icon="shield" label="Roles" value={stats.roles} color="violet" percentage={90} hint="RBAC configured" />
+        <StatCard icon="users" label="Active Users" value={stats.activeUsers} color="warning" percentage={72} hint="+3 new this week" />
+        <StatCard icon="check" label="API Health" value="99.8%" color="success" percentage={99} hint="All systems normal" />
       </div>
 
       {/* Charts + Activity */}
@@ -114,7 +70,9 @@ export default function DashboardPage() {
               <Card.Title>Weekly Activity</Card.Title>
               <Card.Subtitle>API requests & events this week</Card.Subtitle>
             </div>
-            <Badge variant="success" dot>Live</Badge>
+            <Badge variant="success" dot>
+              Live
+            </Badge>
           </Card.Header>
           <Card.Body className="flex-1 flex flex-col justify-center py-6">
             <WeeklyChart data={stats.weeklyData} />
@@ -146,30 +104,10 @@ export default function DashboardPage() {
         </Card.Header>
         <Card.Body>
           <div className="quick-actions-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <QuickActionCard
-              icon="building"
-              label="New Org"
-              color="primary"
-              onClick={() => openModal('organization')}
-            />
-            <QuickActionCard
-              icon="folder-open"
-              label="New Project"
-              color="accent"
-              onClick={() => openModal('project')}
-            />
-            <QuickActionCard
-              icon="flag"
-              label="New Feature"
-              color="success"
-              onClick={() => openModal('feature')}
-            />
-            <QuickActionCard
-              icon="shield"
-              label="New Role"
-              color="violet"
-              onClick={() => openModal('role')}
-            />
+            <QuickActionCard icon="building" label="New Org" color="primary" onClick={() => openModal("organization")} />
+            <QuickActionCard icon="folder-open" label="New Project" color="accent" onClick={() => openModal("project")} />
+            <QuickActionCard icon="flag" label="New Feature" color="success" onClick={() => openModal("feature")} />
+            <QuickActionCard icon="shield" label="New Role" color="violet" onClick={() => openModal("role")} />
             <QuickActionCard icon="users" label="Manage Users" color="warning" href="/profile" />
             <QuickActionCard icon="key" label="Permissions" color="danger" href="/permissions" />
           </div>
@@ -178,49 +116,17 @@ export default function DashboardPage() {
 
       {/* Modals */}
       {modalEntity && (
-        <ModalDrawer
-          open={modalOpen}
-          mode="create"
-          entity={modalEntity}
-          data={modalData}
-          onClose={() => setModalOpen(false)}
-          onSave={handleSave}
-        >
+        <ModalDrawer open={modalOpen} mode="create" entity={modalEntity} data={modalData} onClose={() => setModalOpen(false)} onSave={handleSave}>
           {({ activeTab }) => {
             switch (modalEntity) {
-              case 'organization':
-                return (
-                  <OrganizationForm
-                    mode="create"
-                    data={modalData}
-                    onChange={setModalData}
-                  />
-                );
-              case 'project':
-                return (
-                  <ProjectForm
-                    mode="create"
-                    data={modalData}
-                    onChange={setModalData}
-                  />
-                );
-              case 'feature':
-                return (
-                  <FeatureForm
-                    mode="create"
-                    data={modalData}
-                    onChange={setModalData}
-                  />
-                );
-              case 'role':
-                return (
-                  <RoleForm
-                    mode="create"
-                    activeTab={activeTab}
-                    data={modalData}
-                    onChange={setModalData}
-                  />
-                );
+              case "organization":
+                return <OrganizationForm mode="create" data={modalData} onChange={setModalData} />;
+              case "project":
+                return <ProjectForm mode="create" data={modalData} onChange={setModalData} />;
+              case "feature":
+                return <FeatureForm mode="create" data={modalData} onChange={setModalData} />;
+              case "role":
+                return <RoleForm mode="create" activeTab={activeTab} data={modalData} onChange={setModalData} />;
               default:
                 return null;
             }

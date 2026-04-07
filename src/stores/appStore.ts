@@ -21,6 +21,9 @@ interface AppState {
   currentOrg: string;
   setCurrentOrg: (orgId: string) => void;
 
+  currentProject: string;
+  setCurrentProject: (projectId: string) => void;
+
   toasts: Toast[];
   addToast: (toast: Omit<Toast, 'id'>) => void;
   dismissToast: (id: string) => void;
@@ -50,6 +53,9 @@ export const useAppStore = create<AppState>()(
 
       currentOrg: '',
       setCurrentOrg: (orgId) => set({ currentOrg: orgId }),
+
+      currentProject: '',
+      setCurrentProject: (projectId) => set({ currentProject: projectId }),
 
       toasts: [],
       addToast: (toast) => set((state) => ({
@@ -82,6 +88,7 @@ export const useAppStore = create<AppState>()(
         theme: state.theme,
         sidebarCollapsed: state.sidebarCollapsed,
         currentOrg: state.currentOrg,
+        currentProject: state.currentProject,
       }),
     }
   )

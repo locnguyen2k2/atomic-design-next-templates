@@ -39,7 +39,7 @@ export function Pagination({
   };
 
   return (
-    <div className="pagination flex items-center justify-between py-4">
+    <div className="pagination flex items-center justify-between py-4 mx-4">
       <div className="pagination-info text-sm text-text-muted">
         Showing {startItem}–{endItem} of {totalItems}
       </div>

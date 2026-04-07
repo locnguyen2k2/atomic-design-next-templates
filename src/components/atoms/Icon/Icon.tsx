@@ -72,6 +72,7 @@ const iconMap: Record<IconName, any> = {
   'mobile': faMobile,
   'laptop': faLaptop,
   'arrow-right-from-bracket': faArrowRightFromBracket,
+  'logout': faArrowRightFromBracket,
   'grid-2': faGrip,
   'user': faCircleUser,
   'settings': faGear,

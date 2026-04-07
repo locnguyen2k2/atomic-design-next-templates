@@ -16,8 +16,8 @@ function getOrgName(orgId: string) {
 }
 
 export default function ProfilePage() {
-  const { user } = useUser();
-  const { addToast } = useAppStore();
+  const { data: user, isLoading } = useUser();
+  const { currentOrg, addToast } = useAppStore();
 
   const handleEditProfile = () => {
     addToast({ message: 'Profile editing coming soon', type: 'info' });
@@ -32,6 +32,18 @@ export default function ProfilePage() {
     addToast({ message: 'Copied to clipboard', type: 'success' });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex h-[400px] w-full items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!user) return null;
+
+  const currentRole = user.organization_roles?.find(o => o.id === currentOrg)?.roles?.[0]?.name || 'Member';
+
   return (
     <div className="animate-fade-in">
       {/* Page Header */}
@@ -45,17 +57,17 @@ export default function ProfilePage() {
       {/* Profile Hero */}
       <div className="profile-hero">
         <div className="profile-avatar">
-          {user.first_name[0]}{user.last_name[0]}
+          {user.first_name?.[0]}{user.last_name?.[0]}
         </div>
         <div className="profile-info">
           <div className="profile-name">{user.first_name} {user.last_name}</div>
           <div className="profile-email">{user.email}</div>
           <div className="profile-badges">
             <Badge variant="primary">
-              <Icon name="shield-halved" /> {user.role}
+              <Icon name="shield-halved" /> {currentRole}
             </Badge>
             <Badge variant="success" dot>
-              {/* {user.status} */}
+              {user.status}
             </Badge>
             <Badge variant="muted">
               <Icon name="at" /> {user.email}
@@ -106,7 +118,7 @@ export default function ProfilePage() {
               </div>
               <div className="meta-item">
                 <span className="meta-key">Role</span>
-                <Badge variant="primary">{user.role}</Badge>
+                <Badge variant="primary">{currentRole}</Badge>
               </div>
               <div className="meta-divider" />
               <div className="meta-item">
@@ -164,12 +176,12 @@ export default function ProfilePage() {
               <div className="meta-list">
                 <div className="meta-item">
                   <span className="meta-key">Organization</span>
-                  <Badge variant="primary">{getOrgName(user.organization_id || 'org-001')}</Badge>
+                  <Badge variant="primary">{user.organization_roles?.find(o => o.id === currentOrg)?.name || 'N/A'}</Badge>
                 </div>
                 <div className="meta-item">
                   <span className="meta-key">Org ID</span>
-                  <span className="meta-value copy-pill" onClick={() => handleCopyToClipboard(user.organization_id || 'org-001')}>
-                    <Icon name="copy" /> {user.organization_id || 'org-001'}
+                  <span className="meta-value copy-pill" onClick={() => handleCopyToClipboard(currentOrg)}>
+                    <Icon name="copy" /> {currentOrg}
                   </span>
                 </div>
                 <div className="meta-item">

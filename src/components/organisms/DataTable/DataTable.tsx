@@ -4,6 +4,7 @@ import { Badge } from '@/components/atoms/Badge';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { DateRangePicker } from '@/components/atoms/DateRangePicker';
 import { SearchForm } from '@/components/molecules/SearchForm';
 import { Pagination } from '@/components/molecules/Pagination';
 import { cn } from '@/lib/utils';
@@ -37,6 +38,10 @@ interface DataTableProps<T> {
     itemsPerPage: number;
   };
   filters?: React.ReactNode;
+  enableDateRangeFilter?: boolean;
+  onDateRangeChange?: (range: { from?: Date; to?: Date }) => void;
+  dateRangeFilterLabel?: string;
+  dateRangeFilterValue?: { from?: Date; to?: Date };
   emptyState?: {
     icon: IconName;
     title: string;
@@ -59,6 +64,10 @@ export function DataTable<T extends Record<string, unknown>>({
   onDelete,
   pagination,
   filters,
+  enableDateRangeFilter,
+  onDateRangeChange,
+  dateRangeFilterLabel,
+  dateRangeFilterValue,
   emptyState,
 }: DataTableProps<T>) {
   return (
@@ -69,6 +78,15 @@ export function DataTable<T extends Record<string, unknown>>({
           <SearchForm
             placeholder={searchPlaceholder || 'Search...'}
             onSearch={onSearch}
+          />
+        )}
+        
+        {enableDateRangeFilter && (
+          <DateRangePicker
+            value={dateRangeFilterValue}
+            onChange={onDateRangeChange}
+            label={dateRangeFilterLabel || 'Date Range'}
+            className="min-w-[300px]"
           />
         )}
         

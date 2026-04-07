@@ -41,6 +41,11 @@ interface SidebarProps {
   onToggle: () => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  user: {
+    first_name: string;
+    last_name: string;
+    role?: string;
+  };
 }
 
 export function Sidebar({
@@ -51,13 +56,13 @@ export function Sidebar({
   onToggle,
   mobileOpen,
   onMobileClose,
+  user,
 }: SidebarProps) {
   const [orgDropdownOpen, setOrgDropdownOpen] = useState(false);
   const pathname = usePathname();
 
   return (
     <>
-      {/* Mobile Overlay */}
       {mobileOpen && (
         <div 
           className="fixed inset-0 bg-black/60 z-40 lg:hidden transition-opacity duration-300"
@@ -69,9 +74,7 @@ export function Sidebar({
         className={cn(
           'sidebar fixed left-0 top-0 h-full bg-bg-elevated border-r border-border z-50',
           'transition-all duration-300 ease-in-out overflow-x-hidden',
-          // Desktop sizing
           collapsed ? 'lg:w-[68px]' : 'lg:w-[260px]',
-          // Mobile positioning
           mobileOpen ? 'translate-x-0 w-[260px]' : '-translate-x-full lg:translate-x-0'
         )}
       >
@@ -148,7 +151,6 @@ export function Sidebar({
               <button 
                 className="org-dropdown-create w-full py-1.5 px-2.5 bg-primary-dim text-primary rounded-md hover:bg-primary hover:text-white transition-all duration-200 text-xs font-medium flex items-center justify-center gap-1.5"
                 onClick={() => {
-                  // TODO: Implement create organization modal
                   setOrgDropdownOpen(false);
                 }}
               >
@@ -250,11 +252,11 @@ export function Sidebar({
           href="/profile"
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-bg-surface"
         >
-          <Avatar initials="JD" size="sm" />
+          <Avatar initials={getInitials(`${user.first_name} ${user.last_name}`)} size="sm" />
           {!collapsed && (
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate">John Doe</div>
-              <div className="text-xs text-text-muted truncate">Super Admin</div>
+              <div className="text-sm font-medium truncate">{user.first_name} {user.last_name}</div>
+              <div className="text-xs text-text-muted truncate">{user.role || 'Member'}</div>
             </div>
           )}
         </Link>

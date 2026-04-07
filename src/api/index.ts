@@ -1,3 +1,4 @@
+export { authApi } from './auth';
 export { organizationsApi } from './organizations';
 export { projectsApi } from './projects';
 export { featuresApi } from './features';

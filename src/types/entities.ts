@@ -7,7 +7,7 @@ export interface BaseEntity {
   updated_at: string;
 }
 
-export interface Organization extends BaseEntity {}
+export interface Organization extends BaseEntity { }
 
 export interface Project extends BaseEntity {
   organization_id: string;
@@ -29,9 +29,10 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
-  status: 'active' | 'inactive' | 'suspended';
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   created_at: string;
   updated_at: string;
+  organization_roles: (Organization & { roles: Role[] })[];
 }
 
 export interface ListParams {
@@ -41,6 +42,8 @@ export interface ListParams {
   sort?: string;
   order?: 'asc' | 'desc';
   organization_id?: string;
+  from_date?: string;
+  to_date?: string;
 }
 
 export interface PaginatedResponse<T> {

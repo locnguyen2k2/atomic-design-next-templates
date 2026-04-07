@@ -2,14 +2,11 @@
 
 import { Sidebar } from '@/components/organisms/Sidebar';
 import { Header } from '@/components/organisms/Header';
-import { useAppStore } from '@/stores';
-import { useEffect, useState } from 'react';
+import { useAppStore, useAuthStore } from '@/stores';
+import { useEffect, useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
-
-interface Organization {
-  id: string;
-  name: string;
-}
+import { useMe } from '@/hooks/useUser';
+import type { Organization } from '@/types';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -18,26 +15,55 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) {
   const { theme, toggleTheme, sidebarCollapsed, toggleSidebar, currentOrg, setCurrentOrg } = useAppStore();
+  const { setUser } = useAuthStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [organizations, setOrganizations] = useState<Organization[]>([
-    { id: '1', name: 'Acme Corp' },
-    { id: '2', name: 'TechStart Inc' },
-    { id: '3', name: 'Global Solutions' },
-  ]);
+  
+  const { data: userData, isLoading } = useMe();
 
-  const [currentOrgData, setCurrentOrgData] = useState<Organization>(organizations[0]);
+  const organizations = useMemo(() => {
+    if (userData?.organization_roles) {
+      return userData.organization_roles.map(orgRole => ({
+        id: orgRole.id,
+        name: orgRole.name,
+      }));
+    }
+    return [];
+  }, [userData]);
+
+  const currentOrgData = useMemo(() => {
+    if (organizations.length === 0) return { id: '', name: 'No Organization' };
+    
+    const found = organizations.find(o => o.id === currentOrg);
+    if (found) return found;
+    
+    // If currentOrg is not set or not found, default to first one and update store
+    if (organizations.length > 0 && !currentOrg) {
+      // We'll set it in an effect to avoid render updates
+    }
+    
+    return organizations[0];
+  }, [organizations, currentOrg]);
 
   useEffect(() => {
-    // Close mobile sidebar on route change
+    if (userData) {
+      setUser(userData);
+    }
+  }, [userData, setUser]);
+
+  useEffect(() => {
+    if (organizations.length > 0 && !currentOrg) {
+      setCurrentOrg(organizations[0].id);
+    } else if (organizations.length > 0 && currentOrg) {
+      const found = organizations.find(o => o.id === currentOrg);
+      if (!found) {
+        setCurrentOrg(organizations[0].id);
+      }
+    }
+  }, [organizations, currentOrg, setCurrentOrg]);
+
+  useEffect(() => {
     setMobileSidebarOpen(false);
   }, [breadcrumb]);
-
-  useEffect(() => {
-    if (currentOrg) {
-      const org = organizations.find(o => o.id === currentOrg);
-      if (org) setCurrentOrgData(org);
-    }
-  }, [currentOrg, organizations]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -60,9 +86,18 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   };
 
   const user = {
-    first_name: 'John',
-    last_name: 'Doe',
+    first_name: userData?.first_name || 'User',
+    last_name: userData?.last_name || '',
+    role: userData?.organization_roles?.find(o => o.id === currentOrg)?.roles?.[0]?.name || 'Member',
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-bg">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-bg transition-colors duration-300">
@@ -74,6 +109,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
         onToggle={toggleSidebar}
         mobileOpen={mobileSidebarOpen}
         onMobileClose={() => setMobileSidebarOpen(false)}
+        user={user}
       />
       <div
         className={cn(
@@ -91,8 +127,8 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
           onSidebarToggle={toggleSidebar}
           sidebarCollapsed={sidebarCollapsed}
         />
-        <main className="pt-16 p-4 sm:p-6 min-h-screen">
-          <div className="max-w-[1400px] mx-auto">
+        <main className="pt-16 p-4 sm:p-6 min-h-screen top-[64px] relative text-text-primary">
+          <div className="mx-auto">
             {children}
           </div>
         </main>

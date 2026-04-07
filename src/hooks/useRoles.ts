@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { rolesApi } from '@/api';
 import type { Role, ListParams } from '@/types';
+import { useAppStore } from '@/stores';
 
 export function useRoles(params: ListParams = {}) {
+  const { currentOrg } = useAppStore();
   return useQuery({
-    queryKey: ['roles', params],
+    queryKey: ['roles', params, currentOrg],
     queryFn: () => rolesApi.list(params),
   });
 }

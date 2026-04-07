@@ -1,11 +1,23 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { projectsApi } from '@/api';
 import type { Project, ListParams } from '@/types';
+import { useAppStore } from '@/stores';
 
 export function useProjects(params: ListParams = {}) {
+  const { currentOrg } = useAppStore();
   return useQuery({
-    queryKey: ['projects', params],
+    queryKey: ['projects', params, currentOrg],
     queryFn: () => projectsApi.list(params),
+  });
+}
+
+export function useProjectsCursor(params: { limit?: number; keyword?: string } = {}) {
+  const { currentOrg } = useAppStore();
+  return useInfiniteQuery({
+    queryKey: ['projects', 'cursor', params, currentOrg],
+    queryFn: ({ pageParam }) => projectsApi.listCursor({ ...params, cursor: pageParam }),
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage.data.paginated.has_next ? lastPage.data.paginated.next_cursor : undefined,
   });
 }
 

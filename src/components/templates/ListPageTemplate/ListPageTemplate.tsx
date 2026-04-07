@@ -5,7 +5,6 @@ import { DataTable } from '@/components/organisms/DataTable';
 import { ModalDrawer } from '@/components/organisms/ModalDrawer';
 import { Icon } from '@/components/atoms/Icon';
 import { useAppStore } from '@/stores';
-import { useEffect } from 'react';
 
 interface Column<T> {
   key: keyof T | string;
@@ -29,6 +28,12 @@ interface ListPageTemplateProps<T> {
   onUpdate?: (id: string, data: Partial<T>) => void;
   onDelete?: (id: string) => void;
   filters?: React.ReactNode;
+  enableDateRangeFilter?: boolean;
+  dateRangeFilterLabel?: string;
+  dateField?: keyof T;
+  onDateRangeChange?: (range: { from?: Date; to?: Date }) => void;
+  dateRangeFilterValue?: { from?: Date; to?: Date };
+  onSearch?: (query: string) => void;
   emptyState?: {
     icon: Parameters<typeof import('@/components/atoms/Icon').Icon>[0]['name'];
     title: string;
@@ -50,20 +55,63 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   onUpdate,
   onDelete,
   filters,
+  enableDateRangeFilter,
+  dateRangeFilterLabel,
+  dateField,
+  onDateRangeChange,
+  dateRangeFilterValue,
+  onSearch,
   emptyState,
 }: ListPageTemplateProps<T>) {
   const { modalOpen, modalMode, modalEntity, modalData, openModal, closeModal, addToast } = useAppStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
-  const filteredData = data.filter((item) =>
-    Object.values(item).some(
+  const handleSearch = onSearch || ((query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  });
+
+  const handleDateRangeChange = onDateRangeChange || ((range: { from?: Date; to?: Date }) => {
+    setDateRange(range);
+    setCurrentPage(1);
+  });
+
+  const currentSearchQuery = onSearch ? '' : searchQuery;
+  const currentDateRange = onDateRangeChange ? dateRangeFilterValue || {} : dateRange;
+
+  const filteredData = data.filter((item) => {
+    if (onSearch && onDateRangeChange) {
+      return true; 
+    }
+
+    // Search filter
+    const matchesSearch = Object.values(item).some(
       (value) =>
         typeof value === 'string' &&
-        value.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+        value.toLowerCase().includes(currentSearchQuery.toLowerCase())
+    );
+
+    // Date range filter
+    let matchesDateRange = true;
+    if (enableDateRangeFilter && dateField) {
+      const itemDate = item[dateField];
+      if (itemDate instanceof Date) {
+        matchesDateRange = (!currentDateRange.from || itemDate >= currentDateRange.from) &&
+          (!currentDateRange.to || itemDate <= currentDateRange.to);
+      } else if (typeof itemDate === 'string') {
+        const parsedDate = new Date(itemDate);
+        if (!isNaN(parsedDate.getTime())) {
+          matchesDateRange = (!currentDateRange.from || parsedDate >= currentDateRange.from) &&
+            (!currentDateRange.to || parsedDate <= currentDateRange.to);
+        }
+      }
+    }
+
+    return matchesSearch && matchesDateRange;
+  });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const paginatedData = filteredData.slice(
@@ -90,11 +138,6 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
       onDelete(String(row[keyField as string]));
       addToast({ message: 'Item deleted successfully', type: 'success' });
     }
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
   };
 
   const handlePageChange = (page: number) => {
@@ -147,6 +190,10 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
         onEdit={handleEdit}
         onDelete={handleDelete}
         filters={filters}
+        enableDateRangeFilter={enableDateRangeFilter}
+        onDateRangeChange={handleDateRangeChange}
+        dateRangeFilterValue={currentDateRange}
+        dateRangeFilterLabel={dateRangeFilterLabel}
         pagination={{
           currentPage,
           totalPages,

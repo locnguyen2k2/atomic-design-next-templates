@@ -1,12 +1,82 @@
 'use client';
 
+import { useState } from 'react';
 import { ListPageTemplate } from '@/components/templates/ListPageTemplate';
 import { OrganizationForm } from '@/components/molecules/OrganizationForm';
-import { useOrganizations } from '@/hooks/useOrganizations';
+import { useOrganizations, useCreateOrganization, useUpdateOrganization, useDeleteOrganization } from '@/hooks/useOrganizations';
 import { formatDate } from '@/lib/dateUtils';
+import { useAppStore } from '@/stores';
 
 export default function OrganizationsPage() {
-  const { data: organizations, isLoading } = useOrganizations({});
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>(() => {
+    const now = new Date();
+    const oneMonthAgo = new Date(now);
+    oneMonthAgo.setMonth(now.getMonth() - 1);
+    return {
+      from: oneMonthAgo,
+      to: now
+    };
+  });
+  const [searchQuery, setSearchQuery] = useState('');
+  const { addToast } = useAppStore();
+
+  const getApiParams = () => {
+    const params: any = {};
+    
+    if (searchQuery) {
+      params.search = searchQuery;
+    }
+    
+    if (dateRange.from) {
+      params.from_date = dateRange.from.toISOString().split('T')[0];
+    }
+    
+    if (dateRange.to) {
+      params.to_date = dateRange.to.toISOString().split('T')[0];
+    }
+    
+    return params;
+  };
+
+  const { data: organizations, isLoading } = useOrganizations(getApiParams());
+  const createMutation = useCreateOrganization();
+  const updateMutation = useUpdateOrganization();
+  const deleteMutation = useDeleteOrganization();
+
+  const handleCreate = async (data: any) => {
+    try {
+      await createMutation.mutateAsync(data);
+      addToast({ message: 'Organization created successfully', type: 'success' });
+    } catch (error) {
+      addToast({ message: 'Failed to create organization', type: 'error' });
+    }
+  };
+
+  const handleUpdate = async (id: string, data: any) => {
+    try {
+      await updateMutation.mutateAsync({ id, data });
+      addToast({ message: 'Organization updated successfully', type: 'success' });
+    } catch (error) {
+      addToast({ message: 'Failed to update organization', type: 'error' });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMutation.mutateAsync(id);
+      addToast({ message: 'Organization deleted successfully', type: 'success' });
+    } catch (error) {
+      addToast({ message: 'Failed to delete organization', type: 'error' });
+    }
+  };
+
+  const handleDateRangeChange = (range: { from?: Date; to?: Date }) => {
+    setDateRange(range);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -18,7 +88,16 @@ export default function OrganizationsPage() {
         data={organizations?.data || [] as any[]}
         isLoading={isLoading}
         keyField="id"
+        enableDateRangeFilter={true}
+        dateRangeFilterLabel="Filter by Creation Date"
+        dateField="createdAt"
+        onDateRangeChange={handleDateRangeChange}
+        dateRangeFilterValue={dateRange}
+        onSearch={handleSearch}
         renderForm={(props) => <OrganizationForm {...props} />}
+        onCreate={handleCreate}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
         columns={[
           {
             key: 'name',

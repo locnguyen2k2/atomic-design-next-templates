@@ -6,3 +6,4 @@ export { Avatar } from './Avatar';
 export { Checkbox } from './Checkbox';
 export { Card } from './Card';
 export { Skeleton } from './Skeleton';
+export { DateRangePicker } from './DateRangePicker';

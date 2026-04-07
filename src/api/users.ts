@@ -3,7 +3,7 @@ import type { User, PaginatedResponse, ListParams } from '@/types';
 
 export const usersApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<User>> => {
-    const { data: response } = await apiClient.get('/users', { params });
+    const response = await apiClient.get('/users', { ...params }) as { data: any };
     const data = response?.data;
     return {
       data: data?.users || [],
@@ -15,18 +15,19 @@ export const usersApi = {
   },
 
   get: async (id: string): Promise<User> => {
-    const { data } = await apiClient.get(`/users/${id}`);
-    return data;
+    return await apiClient.get(`/users/${id}`);
+  },
+
+  getMe: async (): Promise<{ data: User }> => {
+    return await apiClient.get('/users/me');
   },
 
   create: async (user: Partial<User>): Promise<User> => {
-    const { data } = await apiClient.post('/users', user);
-    return data;
+    return await apiClient.post('/users', user);
   },
 
   update: async (id: string, user: Partial<User>): Promise<User> => {
-    const { data } = await apiClient.patch(`/users/${id}`, user);
-    return data;
+    return await apiClient.patch(`/users/${id}`, user);
   },
 
   delete: async (id: string): Promise<void> => {

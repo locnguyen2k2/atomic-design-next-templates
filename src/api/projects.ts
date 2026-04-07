@@ -3,7 +3,7 @@ import type { Project, PaginatedResponse, ListParams } from '@/types';
 
 export const projectsApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<Project>> => {
-    const { data: response } = await apiClient.get('/projects', { params });
+    const response = await apiClient.get('/projects', { ...params }) as { data: any };
     const data = response?.data;
     return {
       data: data?.projects || [],
@@ -14,19 +14,28 @@ export const projectsApi = {
     };
   },
 
+  listCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
+    data: {
+      projects: Project[];
+      paginated: {
+        next_cursor: string | null;
+        has_next: boolean;
+      };
+    };
+  }> => {
+    return await apiClient.get('/projects/cursor', params);
+  },
+
   get: async (id: string): Promise<Project> => {
-    const { data } = await apiClient.get(`/projects/${id}`);
-    return data;
+    return await apiClient.get(`/projects/${id}`);
   },
 
   create: async (project: Partial<Project>): Promise<Project> => {
-    const { data } = await apiClient.post('/projects', project);
-    return data;
+    return await apiClient.post('/projects', project);
   },
 
   update: async (id: string, project: Partial<Project>): Promise<Project> => {
-    const { data } = await apiClient.patch(`/projects/${id}`, project);
-    return data;
+    return await apiClient.patch(`/projects/${id}`, project);
   },
 
   delete: async (id: string): Promise<void> => {

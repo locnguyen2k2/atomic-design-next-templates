@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '@/api';
 import type { User, ListParams } from '@/types';
+import { useAppStore } from '@/stores';
 
 export function useUsers(params: ListParams = {}) {
+  const { currentOrg } = useAppStore();
   return useQuery({
-    queryKey: ['users', params],
+    queryKey: ['users', params, currentOrg],
     queryFn: () => usersApi.list(params),
   });
 }

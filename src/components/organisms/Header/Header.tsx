@@ -5,6 +5,7 @@ import { Button } from '@/components/atoms/Button';
 import { Avatar } from '@/components/atoms/Avatar';
 import { SearchForm } from '@/components/molecules/SearchForm';
 import Link from 'next/link';
+import { useAuthStore } from '@/stores/authStore';
 
 interface User {
   first_name: string;
@@ -23,6 +24,8 @@ interface HeaderProps {
 }
 
 export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMobileToggle, onSidebarToggle, sidebarCollapsed }: HeaderProps) {
+  const logout = useAuthStore((state) => state.logout);
+
   return (
     <header className={`header fixed top-0 right-0 left-0 h-16 bg-bg-elevated border-b border-border z-30 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-[68px]' : 'lg:ml-[260px]'}`}>
       <div className="flex items-center justify-between h-full px-6">
@@ -73,10 +76,14 @@ export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMob
             <Icon name={theme === 'dark' ? 'moon' : 'sun'} />
           </Button>
           
-          <Link href="/profile" className="flex items-center gap-2">
+          <Link href="/profile" className="flex items-center gap-2 mr-2">
             <Avatar initials={`${user.first_name[0]}${user.last_name[0]}`} size="sm" />
             <span className="hidden lg:block text-sm">{user.first_name}</span>
           </Link>
+
+          <Button variant="ghost" size="sm" onClick={() => logout()} className="text-danger hover:text-danger hover:bg-danger/10">
+            <Icon name="logout" />
+          </Button>
         </div>
       </div>
     </header>
