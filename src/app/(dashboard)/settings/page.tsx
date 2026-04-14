@@ -24,7 +24,7 @@ export default function SettingsPage() {
           </div>
           <h1 className="text-2xl font-bold text-text-primary mb-3">Settings</h1>
           <p className="text-text-muted mb-6">
-            The settings page is currently under development. We're working hard to bring you comprehensive configuration options for your account and organization.
+            The settings page is currently under development. We&apos;re working hard to bring you comprehensive configuration options for your account and organization.
           </p>
           <div className="bg-bg-surface rounded-lg p-4 border border-border">
             <h3 className="font-semibold text-text-primary mb-2">Coming Soon:</h3>
