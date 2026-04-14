@@ -5,16 +5,16 @@ import type { Organization, ListParams } from '@/types';
 export function useOrganizationsCursor(params: { limit?: number; keyword?: string } = {}) {
   return useInfiniteQuery({
     queryKey: ['organizations', 'cursor', params],
-    queryFn: ({ pageParam }) => organizationsApi.listCursor({ ...params, cursor: pageParam }),
+    queryFn: ({ pageParam }) => organizationsApi.joinedCursor({ ...params, cursor: pageParam }),
     initialPageParam: '',
-    getNextPageParam: (lastPage) => lastPage.data.paginated.has_next ? lastPage.data.paginated.next_cursor : undefined,
+    getNextPageParam: (lastPage) => lastPage.paginated.has_next ? lastPage.paginated.next_cursor : undefined,
   });
 }
 
 export function useOrganizations(params: ListParams = {}) {
   return useQuery({
     queryKey: ['organizations', params],
-    queryFn: () => organizationsApi.list(params),
+    queryFn: () => organizationsApi.joinedPagination(params),
   });
 }
 

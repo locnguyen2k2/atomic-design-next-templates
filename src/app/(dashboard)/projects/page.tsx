@@ -49,7 +49,7 @@ export default function ProjectsPage() {
   const { data: organizationPages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isOrganizationsLoading } = useOrganizationsCursor({ keyword: organizationSearch });
 
   const organizations = useMemo(() => {
-    return organizationPages?.pages.flatMap((page) => page.data.organizations) || [];
+    return organizationPages?.pages.flatMap((page) => page.data) || [];
   }, [organizationPages]);
 
   const handleCreate = async (data: any) => {

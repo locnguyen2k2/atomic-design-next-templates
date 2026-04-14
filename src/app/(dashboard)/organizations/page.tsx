@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { ListPageTemplate } from '@/components/templates/ListPageTemplate';
-import { OrganizationForm } from '@/components/molecules/OrganizationForm';
-import { useOrganizations, useCreateOrganization, useUpdateOrganization, useDeleteOrganization } from '@/hooks/useOrganizations';
-import { formatDate } from '@/lib/dateUtils';
-import { useAppStore } from '@/stores';
+import { useState } from "react";
+import { ListPageTemplate } from "@/components/templates/ListPageTemplate";
+import { OrganizationForm } from "@/components/molecules/OrganizationForm";
+import { useOrganizations, useCreateOrganization, useUpdateOrganization, useDeleteOrganization } from "@/hooks/useOrganizations";
+import { formatDate } from "@/lib/dateUtils";
+import { useAppStore } from "@/stores";
 
 export default function OrganizationsPage() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>(() => {
@@ -14,27 +14,27 @@ export default function OrganizationsPage() {
     oneMonthAgo.setMonth(now.getMonth() - 1);
     return {
       from: oneMonthAgo,
-      to: now
+      to: now,
     };
   });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const { addToast } = useAppStore();
 
   const getApiParams = () => {
     const params: any = {};
-    
+
     if (searchQuery) {
       params.search = searchQuery;
     }
-    
+
     if (dateRange.from) {
-      params.from_date = dateRange.from.toISOString().split('T')[0];
+      params.from_date = dateRange.from.toISOString().split("T")[0];
     }
-    
+
     if (dateRange.to) {
-      params.to_date = dateRange.to.toISOString().split('T')[0];
+      params.to_date = dateRange.to.toISOString().split("T")[0];
     }
-    
+
     return params;
   };
 
@@ -43,30 +43,31 @@ export default function OrganizationsPage() {
   const updateMutation = useUpdateOrganization();
   const deleteMutation = useDeleteOrganization();
 
+  console.log("organizations", organizations);
   const handleCreate = async (data: any) => {
     try {
       await createMutation.mutateAsync(data);
-      addToast({ message: 'Organization created successfully', type: 'success' });
+      addToast({ message: "Organization created successfully", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to create organization', type: 'error' });
+      addToast({ message: "Failed to create organization", type: "error" });
     }
   };
 
   const handleUpdate = async (id: string, data: any) => {
     try {
       await updateMutation.mutateAsync({ id, data });
-      addToast({ message: 'Organization updated successfully', type: 'success' });
+      addToast({ message: "Organization updated successfully", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to update organization', type: 'error' });
+      addToast({ message: "Failed to update organization", type: "error" });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteMutation.mutateAsync(id);
-      addToast({ message: 'Organization deleted successfully', type: 'success' });
+      addToast({ message: "Organization deleted successfully", type: "success" });
     } catch (error) {
-      addToast({ message: 'Failed to delete organization', type: 'error' });
+      addToast({ message: "Failed to delete organization", type: "error" });
     }
   };
 
@@ -85,7 +86,7 @@ export default function OrganizationsPage() {
         subtitle="Manage your multi-tenant organizations. All other resources are scoped to organizations."
         icon="building"
         color="primary"
-        data={organizations?.data || [] as any[]}
+        data={organizations?.data || []}
         isLoading={isLoading}
         keyField="id"
         enableDateRangeFilter={true}
@@ -100,8 +101,8 @@ export default function OrganizationsPage() {
         onDelete={handleDelete}
         columns={[
           {
-            key: 'name',
-            label: 'Name / Slug',
+            key: "name",
+            label: "Name / Slug",
             sortable: true,
             render: (row: any) => (
               <div className="table-cell-meta">
@@ -111,42 +112,30 @@ export default function OrganizationsPage() {
             ),
           },
           {
-            key: 'description',
-            label: 'Description',
-            type: 'desc',
-            render: (row: any) => (
-              <span className="text-text-secondary text-xs truncate max-w-[260px] block">
-                {row.description || 'No description provided'}
-              </span>
-            ),
+            key: "description",
+            label: "Description",
+            type: "desc",
+            render: (row: any) => <span className="text-text-secondary text-xs truncate max-w-[260px] block">{row.description || "No description provided"}</span>,
           },
           {
-            key: 'created_at',
-            label: 'Created',
-            type: 'date',
+            key: "created_at",
+            label: "Created",
+            type: "date",
             sortable: true,
-            render: (row: any) => (
-              <span className="table-cell-date text-text-muted text-xs">
-                {formatDate(row.created_at)}
-              </span>
-            ),
+            render: (row: any) => <span className="table-cell-date text-text-muted text-xs">{formatDate(row.created_at)}</span>,
           },
           {
-            key: 'updated_at',
-            label: 'Updated',
-            type: 'date',
+            key: "updated_at",
+            label: "Updated",
+            type: "date",
             sortable: true,
-            render: (row: any) => (
-              <span className="table-cell-date text-text-muted text-xs">
-                {formatDate(row.updated_at)}
-              </span>
-            ),
+            render: (row: any) => <span className="table-cell-date text-text-muted text-xs">{formatDate(row.updated_at)}</span>,
           },
         ]}
         emptyState={{
-          icon: 'building',
-          title: 'No Organizations Found',
-          message: 'Create your first organization to get started.',
+          icon: "building",
+          title: "No Organizations Found",
+          message: "Create your first organization to get started.",
         }}
       />
     </div>

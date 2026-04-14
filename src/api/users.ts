@@ -1,17 +1,19 @@
 import apiClient from './client';
-import type { User, PaginatedResponse, ListParams } from '@/types';
+import { type User, type PaginatedResponse, type ListParams, BasePageOptionDto } from '@/types';
 
 export const usersApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<User>> => {
-    const response = await apiClient.get('/users', { ...params }) as { data: any };
-    const data = response?.data;
-    return {
-      data: data?.users || [],
-      total: data?.total || 0,
-      page: data?.page || 1,
-      limit: data?.limit || 10,
-      totalPages: data?.totalPages || 1,
-    };
+    let data: PaginatedResponse<User> = {
+      data: [],
+      paginated: new BasePageOptionDto()
+    }
+    try {
+      const response = await apiClient.get<{ data: PaginatedResponse<User> }>('/users', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
   },
 
   get: async (id: string): Promise<User> => {

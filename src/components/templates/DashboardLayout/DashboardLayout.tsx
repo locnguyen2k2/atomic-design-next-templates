@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Sidebar } from '@/components/organisms/Sidebar';
-import { Header } from '@/components/organisms/Header';
-import { useAppStore, useAuthStore } from '@/stores';
-import { useEffect, useState, useMemo } from 'react';
-import { cn } from '@/lib/utils';
-import { useMe } from '@/hooks/useUser';
-import type { Organization } from '@/types';
+import { Sidebar } from "@/components/organisms/Sidebar";
+import { Header } from "@/components/organisms/Header";
+import { useAppStore, useAuthStore } from "@/stores";
+import { useEffect, useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { useMe } from "@/hooks/useUser";
+import type { Organization } from "@/types";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -17,12 +17,12 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   const { theme, toggleTheme, sidebarCollapsed, toggleSidebar, currentOrg, setCurrentOrg } = useAppStore();
   const { setUser } = useAuthStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  
+
   const { data: userData, isLoading } = useMe();
 
   const organizations = useMemo(() => {
-    if (userData?.organization_roles) {
-      return userData.organization_roles.map(orgRole => ({
+    if (userData?.organizations) {
+      return userData.organizations.map((orgRole) => ({
         id: orgRole.id,
         name: orgRole.name,
       }));
@@ -31,16 +31,16 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   }, [userData]);
 
   const currentOrgData = useMemo(() => {
-    if (organizations.length === 0) return { id: '', name: 'No Organization' };
-    
-    const found = organizations.find(o => o.id === currentOrg);
+    if (organizations.length === 0) return { id: "", name: "No Organization" };
+
+    const found = organizations.find((o) => o.id === currentOrg);
     if (found) return found;
-    
+
     // If currentOrg is not set or not found, default to first one and update store
     if (organizations.length > 0 && !currentOrg) {
       // We'll set it in an effect to avoid render updates
     }
-    
+
     return organizations[0];
   }, [organizations, currentOrg]);
 
@@ -54,7 +54,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
     if (organizations.length > 0 && !currentOrg) {
       setCurrentOrg(organizations[0].id);
     } else if (organizations.length > 0 && currentOrg) {
-      const found = organizations.find(o => o.id === currentOrg);
+      const found = organizations.find((o) => o.id === currentOrg);
       if (!found) {
         setCurrentOrg(organizations[0].id);
       }
@@ -67,14 +67,14 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        document.getElementById('globalSearch')?.focus();
+        document.getElementById("globalSearch")?.focus();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   const handleOrgSwitch = (orgId: string) => {
@@ -82,13 +82,13 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   };
 
   const handleSearch = (query: string) => {
-    console.log('Search:', query);
+    console.log("Search:", query);
   };
 
   const user = {
-    first_name: userData?.first_name || 'User',
-    last_name: userData?.last_name || '',
-    role: userData?.organization_roles?.find(o => o.id === currentOrg)?.roles?.[0]?.name || 'Member',
+    first_name: userData?.first_name || "User",
+    last_name: userData?.last_name || "",
+    role: userData?.organizations?.find((o) => o.id === currentOrg)?.roles?.[0]?.name || "Member",
   };
 
   if (isLoading) {
@@ -101,36 +101,11 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
 
   return (
     <div className="flex min-h-screen bg-bg transition-colors duration-300">
-      <Sidebar
-        currentOrg={currentOrgData}
-        organizations={organizations}
-        onOrgSwitch={handleOrgSwitch}
-        collapsed={sidebarCollapsed}
-        onToggle={toggleSidebar}
-        mobileOpen={mobileSidebarOpen}
-        onMobileClose={() => setMobileSidebarOpen(false)}
-        user={user}
-      />
-      <div
-        className={cn(
-          'flex-1 transition-all duration-300 min-w-0',
-          sidebarCollapsed ? 'lg:ml-[68px]' : 'lg:ml-[260px]'
-        )}
-      >
-        <Header
-          breadcrumb={breadcrumb}
-          theme={theme}
-          onThemeToggle={toggleTheme}
-          onSearch={handleSearch}
-          user={user}
-          onMobileToggle={() => setMobileSidebarOpen(true)}
-          onSidebarToggle={toggleSidebar}
-          sidebarCollapsed={sidebarCollapsed}
-        />
+      <Sidebar currentOrg={currentOrgData} organizations={organizations} onOrgSwitch={handleOrgSwitch} collapsed={sidebarCollapsed} onToggle={toggleSidebar} mobileOpen={mobileSidebarOpen} onMobileClose={() => setMobileSidebarOpen(false)} user={user} />
+      <div className={cn("flex-1 transition-all duration-300 min-w-0", sidebarCollapsed ? "lg:ml-[68px]" : "lg:ml-[260px]")}>
+        <Header breadcrumb={breadcrumb} theme={theme} onThemeToggle={toggleTheme} onSearch={handleSearch} user={user} onMobileToggle={() => setMobileSidebarOpen(true)} onSidebarToggle={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         <main className="pt-16 p-4 sm:p-6 min-h-screen top-[64px] relative text-text-primary">
-          <div className="mx-auto">
-            {children}
-          </div>
+          <div className="mx-auto">{children}</div>
         </main>
       </div>
     </div>

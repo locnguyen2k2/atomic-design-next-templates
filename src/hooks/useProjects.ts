@@ -17,7 +17,7 @@ export function useProjectsCursor(params: { limit?: number; keyword?: string } =
     queryKey: ['projects', 'cursor', params, currentOrg],
     queryFn: ({ pageParam }) => projectsApi.listCursor({ ...params, cursor: pageParam }),
     initialPageParam: '',
-    getNextPageParam: (lastPage) => lastPage.data.paginated.has_next ? lastPage.data.paginated.next_cursor : undefined,
+    getNextPageParam: (lastPage) => lastPage.paginated.has_next ? lastPage.paginated.next_cursor : undefined,
   });
 }
 

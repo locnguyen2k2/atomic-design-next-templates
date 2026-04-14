@@ -1,29 +1,39 @@
 import apiClient from './client';
-import type { Organization, PaginatedResponse, ListParams } from '@/types';
+import { type Organization, type PaginatedResponse, type ListParams, BasePageOptionDto, BaseCursorOptionDto, CursorResponse } from '@/types';
 
 export const organizationsApi = {
-  listCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
-    data: {
-      organizations: Organization[];
-      paginated: {
-        next_cursor: string | null;
-        has_next: boolean;
-      };
+  joinedCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
+    data: Organization[];
+    paginated: {
+      next_cursor: string | null;
+      has_next: boolean;
     };
   }> => {
-    return await apiClient.get('/organizations/cursor', params);
+    let data: CursorResponse<Organization> = {
+      data: [],
+      paginated: new BaseCursorOptionDto()
+    }
+    try {
+      const response = await apiClient.get<{ data: CursorResponse<Organization> }>('/organizations/joined/cursor', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
   },
 
-  list: async (params: ListParams = {}): Promise<PaginatedResponse<Organization>> => {
-    const response = await apiClient.get('/organizations', params) as { data: any };
-    const data = response?.data;
-    return {
-      data: data?.organizations || [],
-      total: data?.total || 0,
-      page: data?.page || 1,
-      limit: data?.limit || 10,
-      totalPages: data?.totalPages || 1,
-    };
+  joinedPagination: async (params: ListParams = {}): Promise<PaginatedResponse<Organization>> => {
+    let data: PaginatedResponse<Organization> = {
+      data: [],
+      paginated: new BasePageOptionDto()
+    }
+    try {
+      const response = await apiClient.get<{ data: PaginatedResponse<Organization> }>('/organizations/joined', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
   },
 
   get: async (id: string): Promise<Organization> => {

@@ -21,6 +21,7 @@ interface AuthActions {
   clearAuth: () => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>()(
@@ -85,6 +86,67 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       setLoading: (loading) => set({ isLoading: loading }),
       setError: (error) => set({ error }),
+
+      checkAuth: async () => {
+        const { accessToken, refreshToken, logout, setTokens, setUser, setLoading } = get();
+        
+        if (!accessToken) {
+          if (refreshToken) {
+            try {
+              setLoading(true);
+              const res = await authApi.refreshToken(refreshToken);
+              const tokens = (res as any).data || res;
+              setTokens({
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expires_in: tokens.expires_in,
+              });
+              const userRes = await authApi.verifyAccessToken(tokens.access_token);
+              const user = (userRes as any).data || userRes;
+              setUser(user);
+              set({ isAuthenticated: true });
+            } catch (error) {
+              await logout();
+            } finally {
+              setLoading(false);
+            }
+          } else {
+            set({ isAuthenticated: false });
+          }
+          return;
+        }
+
+        try {
+          setLoading(true);
+          const userRes = await authApi.verifyAccessToken(accessToken);
+          const user = (userRes as any).data || userRes;
+          setUser(user);
+          set({ isAuthenticated: true });
+        } catch (error) {
+          // Access token might be expired, try refresh token
+          if (refreshToken) {
+            try {
+              const res = await authApi.refreshToken(refreshToken);
+              const tokens = (res as any).data || res;
+              setTokens({
+                access_token: tokens.access_token,
+                refresh_token: tokens.refresh_token,
+                expires_in: tokens.expires_in,
+              });
+              const userResAfterRefresh = await authApi.verifyAccessToken(tokens.access_token);
+              const userAfterRefresh = (userResAfterRefresh as any).data || userResAfterRefresh;
+              setUser(userAfterRefresh);
+              set({ isAuthenticated: true });
+            } catch (refreshError) {
+              await logout();
+            }
+          } else {
+            await logout();
+          }
+        } finally {
+          setLoading(false);
+        }
+      },
     }),
     {
       name: 'nexusiam-auth-storage',

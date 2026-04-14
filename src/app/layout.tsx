@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 import './globals.css'
-import { QueryProvider, ThemeProvider, ToastProvider } from '@/providers'
+import { QueryProvider, ThemeProvider, ToastProvider, AuthProvider } from '@/providers'
 
 config.autoAddCss = false
 
@@ -25,7 +25,9 @@ export default function RootLayout({
         <QueryProvider>
           <ThemeProvider>
             <ToastProvider>
-              {children}
+              <AuthProvider>
+                {children}
+              </AuthProvider>
             </ToastProvider>
           </ThemeProvider>
         </QueryProvider>

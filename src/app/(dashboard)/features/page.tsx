@@ -27,7 +27,7 @@ export default function FeaturesPage() {
   const { data: projectPages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isProjectsLoading } = useProjectsCursor({ keyword: projectSearch });
 
   const projects = useMemo(() => {
-    return projectPages?.pages.flatMap((page) => page.data.projects) || [];
+    return projectPages?.pages.flatMap((page) => page.data) || [];
   }, [projectPages]);
 
   const getApiParams = () => {

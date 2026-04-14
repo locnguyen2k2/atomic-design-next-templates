@@ -1020,7 +1020,7 @@ body {
 
 /* Modal Body */
 .modal-body {
-  flex: 1;
+  flex: .87;
   overflow-y: auto;
   padding: 24px;
 }

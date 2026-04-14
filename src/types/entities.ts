@@ -7,6 +7,25 @@ export interface BaseEntity {
   updated_at: string;
 }
 
+export class BasePageOptionDto {
+  keyword!: string;
+  sort!: string;
+  sorted!: string;
+  from_date!: string;
+  to_date!: string;
+  page!: number;
+  take!: number;
+  number_records!: number;
+  pages!: number;
+  has_prev!: boolean;
+  has_next!: boolean;
+}
+
+export class BaseCursorOptionDto {
+  next_cursor!: string | null;
+  has_next!: boolean;
+}
+
 export interface Organization extends BaseEntity { }
 
 export interface Project extends BaseEntity {
@@ -32,7 +51,7 @@ export interface User {
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   created_at: string;
   updated_at: string;
-  organization_roles: (Organization & { roles: Role[] })[];
+  organizations: (Organization & { roles: Role[] })[];
 }
 
 export interface ListParams {
@@ -48,10 +67,12 @@ export interface ListParams {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  paginated: BasePageOptionDto,
+}
+
+export interface CursorResponse<T> {
+  data: T[];
+  paginated: BaseCursorOptionDto,
 }
 
 export interface LoginRequest {

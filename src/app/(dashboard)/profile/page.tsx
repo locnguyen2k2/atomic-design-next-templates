@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { Card } from '@/components/atoms/Card';
-import { Badge } from '@/components/atoms/Badge';
-import { Button } from '@/components/atoms/Button';
-import { Icon } from '@/components/atoms/Icon';
-import { useUser } from '@/hooks/useUser';
-import { useAppStore } from '@/stores';
+import { Card } from "@/components/atoms/Card";
+import { Badge } from "@/components/atoms/Badge";
+import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
+import { useUser } from "@/hooks/useUser";
+import { useAppStore } from "@/stores";
 
 function formatDateTime(dateString: string) {
   return new Date(dateString).toLocaleString();
 }
 
 function getOrgName(orgId: string) {
-  return orgId === 'org-001' ? 'Acme Corporation' : 'Unknown Organization';
+  return orgId === "org-001" ? "Acme Corporation" : "Unknown Organization";
 }
 
 export default function ProfilePage() {
@@ -20,16 +20,16 @@ export default function ProfilePage() {
   const { currentOrg, addToast } = useAppStore();
 
   const handleEditProfile = () => {
-    addToast({ message: 'Profile editing coming soon', type: 'info' });
+    addToast({ message: "Profile editing coming soon", type: "info" });
   };
 
   const handleRefreshToken = () => {
-    addToast({ message: 'Token refreshed!', type: 'success' });
+    addToast({ message: "Token refreshed!", type: "success" });
   };
 
   const handleCopyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    addToast({ message: 'Copied to clipboard', type: 'success' });
+    addToast({ message: "Copied to clipboard", type: "success" });
   };
 
   if (isLoading) {
@@ -42,7 +42,7 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const currentRole = user.organization_roles?.find(o => o.id === currentOrg)?.roles?.[0]?.name || 'Member';
+  const currentRole = user.organizations?.find((o) => o.id === currentOrg)?.roles?.[0]?.name || "Member";
 
   return (
     <div className="animate-fade-in">
@@ -57,10 +57,13 @@ export default function ProfilePage() {
       {/* Profile Hero */}
       <div className="profile-hero">
         <div className="profile-avatar">
-          {user.first_name?.[0]}{user.last_name?.[0]}
+          {user.first_name?.[0]}
+          {user.last_name?.[0]}
         </div>
         <div className="profile-info">
-          <div className="profile-name">{user.first_name} {user.last_name}</div>
+          <div className="profile-name">
+            {user.first_name} {user.last_name}
+          </div>
           <div className="profile-email">{user.email}</div>
           <div className="profile-badges">
             <Badge variant="primary">
@@ -136,7 +139,7 @@ export default function ProfilePage() {
         {/* Right Column */}
         <div>
           {/* Session Card */}
-          <Card style={{ marginBottom: '16px' }}>
+          <Card style={{ marginBottom: "16px" }}>
             <Card.Header>
               <Card.Title>Session</Card.Title>
             </Card.Header>
@@ -144,7 +147,7 @@ export default function ProfilePage() {
               <div className="meta-list">
                 <div className="meta-item">
                   <span className="meta-key">API Base</span>
-                  <span className="meta-value" style={{ fontFamily: 'var(--font-mono)', fontSize: '10px' }}>
+                  <span className="meta-value" style={{ fontFamily: "var(--font-mono)", fontSize: "10px" }}>
                     localhost:3004/apis/v1
                   </span>
                 </div>
@@ -154,7 +157,9 @@ export default function ProfilePage() {
                 </div>
                 <div className="meta-item">
                   <span className="meta-key">Token Status</span>
-                  <Badge variant="success" dot>Valid</Badge>
+                  <Badge variant="success" dot>
+                    Valid
+                  </Badge>
                 </div>
                 <div className="meta-item">
                   <span className="meta-key">Expires In</span>
@@ -176,7 +181,7 @@ export default function ProfilePage() {
               <div className="meta-list">
                 <div className="meta-item">
                   <span className="meta-key">Organization</span>
-                  <Badge variant="primary">{user.organization_roles?.find(o => o.id === currentOrg)?.name || 'N/A'}</Badge>
+                  <Badge variant="primary">{user.organizations?.find((o) => o.id === currentOrg)?.name || "N/A"}</Badge>
                 </div>
                 <div className="meta-item">
                   <span className="meta-key">Org ID</span>

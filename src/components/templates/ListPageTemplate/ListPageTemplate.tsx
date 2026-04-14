@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { DataTable } from '@/components/organisms/DataTable';
-import { ModalDrawer } from '@/components/organisms/ModalDrawer';
-import { Icon } from '@/components/atoms/Icon';
-import { useAppStore } from '@/stores';
+import React, { useState } from "react";
+import { DataTable } from "@/components/organisms/DataTable";
+import { ModalDrawer } from "@/components/organisms/ModalDrawer";
+import { Icon } from "@/components/atoms/Icon";
+import { useAppStore } from "@/stores";
 
 interface Column<T> {
   key: keyof T | string;
   label: string;
   sortable?: boolean;
   render?: (row: T) => React.ReactNode;
-  type?: 'text' | 'slug' | 'date' | 'org' | 'desc';
+  type?: "text" | "slug" | "date" | "org" | "desc";
 }
 
 interface ListPageTemplateProps<T> {
   title: string;
   subtitle: string;
-  icon: Parameters<typeof import('@/components/atoms/Icon').Icon>[0]['name'];
-  color: 'primary' | 'accent' | 'success' | 'warning' | 'danger' | 'violet';
+  icon: Parameters<typeof import("@/components/atoms/Icon").Icon>[0]["name"];
+  color: "primary" | "accent" | "success" | "warning" | "danger" | "violet";
   data: T[];
   columns: Column<T>[];
   keyField: keyof T;
@@ -35,7 +35,7 @@ interface ListPageTemplateProps<T> {
   dateRangeFilterValue?: { from?: Date; to?: Date };
   onSearch?: (query: string) => void;
   emptyState?: {
-    icon: Parameters<typeof import('@/components/atoms/Icon').Icon>[0]['name'];
+    icon: Parameters<typeof import("@/components/atoms/Icon").Icon>[0]["name"];
     title: string;
     message: string;
   };
@@ -64,48 +64,46 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   emptyState,
 }: ListPageTemplateProps<T>) {
   const { modalOpen, modalMode, modalEntity, modalData, openModal, closeModal, addToast } = useAppStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
-  const handleSearch = onSearch || ((query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
-  });
+  const handleSearch =
+    onSearch ||
+    ((query: string) => {
+      setSearchQuery(query);
+      setCurrentPage(1);
+    });
 
-  const handleDateRangeChange = onDateRangeChange || ((range: { from?: Date; to?: Date }) => {
-    setDateRange(range);
-    setCurrentPage(1);
-  });
+  const handleDateRangeChange =
+    onDateRangeChange ||
+    ((range: { from?: Date; to?: Date }) => {
+      setDateRange(range);
+      setCurrentPage(1);
+    });
 
-  const currentSearchQuery = onSearch ? '' : searchQuery;
+  const currentSearchQuery = onSearch ? "" : searchQuery;
   const currentDateRange = onDateRangeChange ? dateRangeFilterValue || {} : dateRange;
 
-  const filteredData = data.filter((item) => {
+  const filteredData = data?.filter((item) => {
     if (onSearch && onDateRangeChange) {
-      return true; 
+      return true;
     }
 
     // Search filter
-    const matchesSearch = Object.values(item).some(
-      (value) =>
-        typeof value === 'string' &&
-        value.toLowerCase().includes(currentSearchQuery.toLowerCase())
-    );
+    const matchesSearch = Object.values(item).some((value) => typeof value === "string" && value.toLowerCase().includes(currentSearchQuery.toLowerCase()));
 
     // Date range filter
     let matchesDateRange = true;
     if (enableDateRangeFilter && dateField) {
       const itemDate = item[dateField];
       if (itemDate instanceof Date) {
-        matchesDateRange = (!currentDateRange.from || itemDate >= currentDateRange.from) &&
-          (!currentDateRange.to || itemDate <= currentDateRange.to);
-      } else if (typeof itemDate === 'string') {
+        matchesDateRange = (!currentDateRange.from || itemDate >= currentDateRange.from) && (!currentDateRange.to || itemDate <= currentDateRange.to);
+      } else if (typeof itemDate === "string") {
         const parsedDate = new Date(itemDate);
         if (!isNaN(parsedDate.getTime())) {
-          matchesDateRange = (!currentDateRange.from || parsedDate >= currentDateRange.from) &&
-            (!currentDateRange.to || parsedDate <= currentDateRange.to);
+          matchesDateRange = (!currentDateRange.from || parsedDate >= currentDateRange.from) && (!currentDateRange.to || parsedDate <= currentDateRange.to);
         }
       }
     }
@@ -114,29 +112,26 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   });
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleCreate = () => {
-    openModal('create', modalEntity || 'organization');
+    openModal("create", modalEntity || "organization");
   };
 
   const handleView = (row: T) => {
-    console.log('Viewing row:', row);
-    openModal('view', modalEntity || 'organization', row);
+    console.log("Viewing row:", row);
+    openModal("view", modalEntity || "organization", row);
   };
 
   const handleEdit = (row: T) => {
-    console.log('Editing row:', row);
-    openModal('edit', modalEntity || 'organization', row);
+    console.log("Editing row:", row);
+    openModal("edit", modalEntity || "organization", row);
   };
 
   const handleDelete = (row: T) => {
-    if (onDelete && confirm('Are you sure you want to delete this item?')) {
+    if (onDelete && confirm("Are you sure you want to delete this item?")) {
       onDelete(String(row[keyField as string]));
-      addToast({ message: 'Item deleted successfully', type: 'success' });
+      addToast({ message: "Item deleted successfully", type: "success" });
     }
   };
 
@@ -145,12 +140,12 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   };
 
   const handleSave = (data: Record<string, unknown>) => {
-    if (modalMode === 'create' && onCreate) {
+    if (modalMode === "create" && onCreate) {
       onCreate(data as T);
-      addToast({ message: 'Item created successfully', type: 'success' });
-    } else if (modalMode === 'edit' && modalData && onUpdate) {
+      addToast({ message: "Item created successfully", type: "success" });
+    } else if (modalMode === "edit" && modalData && onUpdate) {
       onUpdate(String((modalData as T)[keyField]), data as Partial<T>);
-      addToast({ message: 'Item updated successfully', type: 'success' });
+      addToast({ message: "Item updated successfully", type: "success" });
     }
     closeModal();
   };
@@ -158,7 +153,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   const handleDeleteFromModal = () => {
     if (modalData && onDelete) {
       onDelete(String((modalData as T)[keyField]));
-      addToast({ message: 'Item deleted successfully', type: 'success' });
+      addToast({ message: "Item deleted successfully", type: "success" });
       closeModal();
     }
   };
@@ -204,15 +199,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
       />
 
       {/* Modal Drawer */}
-      <ModalDrawer
-        open={modalOpen}
-        mode={modalMode}
-        entity={modalEntity || 'organization'}
-        data={modalData}
-        onClose={closeModal}
-        onSave={handleSave}
-        onDelete={handleDeleteFromModal}
-      >
+      <ModalDrawer open={modalOpen} mode={modalMode} entity={modalEntity || "organization"} data={modalData} onClose={closeModal} onSave={handleSave} onDelete={handleDeleteFromModal}>
         {({ activeTab }) => renderForm && renderForm({ data: modalData, mode: modalMode, activeTab })}
       </ModalDrawer>
     </>
