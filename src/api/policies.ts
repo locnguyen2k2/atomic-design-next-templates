@@ -9,7 +9,7 @@ export const policiesApi = {
       paginated: new BasePageOptionDto()
     }
     try {
-      const response = await apiClient.get<{ data: PaginatedResponse<AbacPolicy> }>(`/organizations/${orgId}/policies`, params);
+      const response = await apiClient.get<{ data: PaginatedResponse<AbacPolicy> }>(`/policies/organizations/${orgId}`, params);
       data = response?.data;
     } catch (e: any) {
       console.log(e);
@@ -18,19 +18,19 @@ export const policiesApi = {
   },
 
   get: async (orgId: string, id: string): Promise<AbacPolicy> => {
-    return await apiClient.get(`/organizations/${orgId}/policies/${id}`);
+    return await apiClient.get(`/policies/${id}`);
   },
 
   create: async (orgId: string, policy: Partial<AbacPolicy>): Promise<AbacPolicy> => {
-    return await apiClient.post(`/organizations/${orgId}/policies`, policy);
+    return await apiClient.post(`/policies/organizations/${orgId}`, policy);
   },
 
   update: async (orgId: string, id: string, policy: Partial<AbacPolicy>): Promise<AbacPolicy> => {
-    return await apiClient.patch(`/organizations/${orgId}/policies/${id}`, policy);
+    return await apiClient.patch(`/policies/${id}`, policy);
   },
 
   delete: async (orgId: string, id: string): Promise<void> => {
-    await apiClient.delete(`/organizations/${orgId}/policies/${id}`);
+    await apiClient.delete(`/policies/${id}`);
   },
 
   listResourceTypesCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
