@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from '@/components/atoms/Badge';
 import { Button } from '@/components/atoms/Button';
 import { Icon } from '@/components/atoms/Icon';
 import { Skeleton } from '@/components/atoms/Skeleton';

@@ -1,6 +1,6 @@
 export type AttributeType = 'STRING' | 'BOOLEAN' | 'NUMBER';
 
-export interface Attribute {
+export interface Attribute extends Record<string, any> {
   id: string;
   key: string;
   label: string;
