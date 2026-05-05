@@ -16,7 +16,7 @@ export const projectsApi = {
     return data;
   },
 
-  listCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
+  listCursor: async (params: { cursor?: string; limit?: number; keyword?: string; organization_id?: string } = {}): Promise<{
     data: Project[];
     paginated: {
       next_cursor: string | null;
@@ -28,7 +28,11 @@ export const projectsApi = {
       paginated: new BaseCursorOptionDto()
     }
     try {
-      const response = await apiClient.get<{ data: CursorResponse<Project> }>('/projects/cursor', params);
+      const { organization_id, ...rest } = params;
+      const headers: Record<string, string> = {};
+      if (organization_id) headers['organization-id'] = organization_id;
+
+      const response = await apiClient.get<{ data: CursorResponse<Project> }>('/projects/cursor', rest, headers);
       data = response?.data;
     } catch (e: any) {
       console.log(e);

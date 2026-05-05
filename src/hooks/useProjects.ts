@@ -11,13 +11,15 @@ export function useProjects(params: ListParams = {}) {
   });
 }
 
-export function useProjectsCursor(params: { limit?: number; keyword?: string } = {}) {
+export function useProjectsCursor(params: { limit?: number; keyword?: string; organizationId?: string } = {}) {
   const { currentOrg } = useAppStore();
+  const orgId = params.organizationId || currentOrg;
   return useInfiniteQuery({
-    queryKey: ['projects', 'cursor', params, currentOrg],
-    queryFn: ({ pageParam }) => projectsApi.listCursor({ ...params, cursor: pageParam }),
+    queryKey: ['projects', 'cursor', params, orgId],
+    queryFn: ({ pageParam }) => projectsApi.listCursor({ ...params, cursor: pageParam, organization_id: orgId }),
     initialPageParam: '',
     getNextPageParam: (lastPage) => lastPage.paginated.has_next ? lastPage.paginated.next_cursor : undefined,
+    enabled: !!orgId,
   });
 }
 

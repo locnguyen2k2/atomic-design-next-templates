@@ -33,12 +33,72 @@ function getProjectId(): string | null {
   return null;
 }
 
+function getRefreshToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const storage = localStorage.getItem('nexusiam-auth-storage');
+    if (storage) {
+      const parsed = JSON.parse(storage);
+      return parsed.state.refreshToken || null;
+    }
+  } catch (e) {
+    console.error('Error parsing nexusiam-auth-storage', e);
+  }
+  return null;
+}
+
 
 class ApiClient {
   private baseURL: string;
+  private isRefreshing: boolean = false;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
+  }
+
+  private async refreshAccessToken(): Promise<string | null> {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return null;
+
+    try {
+      const response = await fetch(`${this.baseURL}/users/refresh-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      const tokens = data.data || data;
+      const newAccessToken = tokens.access_token;
+
+      if (newAccessToken) {
+        localStorage.setItem('nexusiam-token', newAccessToken);
+
+        try {
+          const storage = localStorage.getItem('nexusiam-auth-storage');
+          if (storage) {
+            const parsed = JSON.parse(storage);
+            parsed.state.accessToken = newAccessToken;
+            parsed.state.refreshToken = tokens.refresh_token || refreshToken;
+            parsed.state.expiresIn = tokens.expires_in;
+            localStorage.setItem('nexusiam-auth-storage', JSON.stringify(parsed));
+          }
+        } catch (e) {
+          console.error('Error updating auth storage', e);
+        }
+      }
+
+      return newAccessToken;
+    } catch (error) {
+      console.error('Token refresh error:', error);
+      return null;
+    }
   }
 
   private async request<T>(
@@ -76,6 +136,48 @@ class ApiClient {
       const response = await fetch(url, config);
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        if (response.status === 401 && !this.isRefreshing) {
+          this.isRefreshing = true;
+
+          try {
+            const newToken = await this.refreshAccessToken();
+
+            if (newToken) {
+              headers.Authorization = `Bearer ${newToken}`;
+              const retryConfig: RequestInit = {
+                ...options,
+                headers,
+              };
+
+              const retryResponse = await fetch(url, retryConfig);
+
+              if (!retryResponse.ok) {
+                throw new Error(`HTTP error! status: ${retryResponse.status}`);
+              }
+
+              const contentType = retryResponse.headers.get('content-type');
+              if (contentType && contentType.includes('application/json')) {
+                return await retryResponse.json();
+              }
+              return {} as T;
+            } else {
+              if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+              }
+              throw new Error('Token refresh failed');
+            }
+          } catch (refreshError) {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
+            throw refreshError;
+          } finally {
+            this.isRefreshing = false;
+          }
+        }
+
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 

@@ -7,7 +7,7 @@ import { Icon } from '@/components/atoms/Icon';
 import { cn } from '@/lib/utils';
 
 type ModalMode = 'create' | 'view' | 'edit';
-type ModalEntity = 'organization' | 'project' | 'feature' | 'role';
+type ModalEntity = 'organization' | 'project' | 'feature' | 'role' | 'policy';
 
 interface ModalDrawerProps {
   open: boolean;

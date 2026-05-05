@@ -1,0 +1,88 @@
+import apiClient from './client';
+import { AbacPolicy } from '@/types/abac';
+import { PaginatedResponse, ListParams, BasePageOptionDto, BaseCursorOptionDto, CursorResponse } from '@/types';
+
+export const policiesApi = {
+  list: async (orgId: string, params: ListParams = {}): Promise<PaginatedResponse<AbacPolicy>> => {
+    let data: PaginatedResponse<AbacPolicy> = {
+      data: [],
+      paginated: new BasePageOptionDto()
+    }
+    try {
+      const response = await apiClient.get<{ data: PaginatedResponse<AbacPolicy> }>(`/organizations/${orgId}/policies`, params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
+  },
+
+  get: async (orgId: string, id: string): Promise<AbacPolicy> => {
+    return await apiClient.get(`/organizations/${orgId}/policies/${id}`);
+  },
+
+  create: async (orgId: string, policy: Partial<AbacPolicy>): Promise<AbacPolicy> => {
+    return await apiClient.post(`/organizations/${orgId}/policies`, policy);
+  },
+
+  update: async (orgId: string, id: string, policy: Partial<AbacPolicy>): Promise<AbacPolicy> => {
+    return await apiClient.patch(`/organizations/${orgId}/policies/${id}`, policy);
+  },
+
+  delete: async (orgId: string, id: string): Promise<void> => {
+    await apiClient.delete(`/organizations/${orgId}/policies/${id}`);
+  },
+
+  listResourceTypesCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
+    data: { slug: string; name: string; description: string }[];
+    paginated: {
+      keyword: string;
+      sort: string;
+      sorted: string;
+      from_date: string;
+      to_date: string;
+      limit: number;
+      direction: string;
+      number_records: number;
+      has_next: boolean;
+      has_prev: boolean;
+    };
+  }> => {
+    let data: {
+      data: { slug: string; name: string; description: string }[];
+      paginated: {
+        keyword: string;
+        sort: string;
+        sorted: string;
+        from_date: string;
+        to_date: string;
+        limit: number;
+        direction: string;
+        number_records: number;
+        has_next: boolean;
+        has_prev: boolean;
+      };
+    } = {
+      data: [],
+      paginated: {
+        keyword: '',
+        sort: 'created_at',
+        sorted: 'desc',
+        from_date: '',
+        to_date: '',
+        limit: 10,
+        direction: 'next',
+        number_records: 0,
+        has_next: false,
+        has_prev: false
+      }
+    }
+    try {
+      const response = await apiClient.get<{ data: typeof data }>('/policies/resources/cursor', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
+  },
+};

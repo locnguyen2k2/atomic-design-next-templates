@@ -6,7 +6,6 @@ import { useAppStore, useAuthStore } from "@/stores";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useMe } from "@/hooks/useUser";
-import type { Organization } from "@/types";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -36,9 +35,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
     const found = organizations.find((o) => o.id === currentOrg);
     if (found) return found;
 
-    // If currentOrg is not set or not found, default to first one and update store
     if (organizations.length > 0 && !currentOrg) {
-      // We'll set it in an effect to avoid render updates
     }
 
     return organizations[0];

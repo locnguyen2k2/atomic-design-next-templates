@@ -42,6 +42,22 @@ export interface Role extends BaseEntity {
   organization_id: string;
 }
 
+export interface Clearance extends BaseEntity {
+  level: string;
+}
+
+export interface Subscription extends BaseEntity {
+  tier: string;
+}
+
+export interface Environment extends BaseEntity {
+  type: string;
+}
+
+export interface Department extends BaseEntity {
+  code: string;
+}
+
 export interface User {
   id: string;
   username: string;
@@ -57,12 +73,15 @@ export interface User {
 export interface ListParams {
   page?: number;
   limit?: number;
+  take?: number;
   search?: string;
   sort?: string;
   order?: 'asc' | 'desc';
   organization_id?: string;
   from_date?: string;
   to_date?: string;
+  keyword?: string;
+  sorted?: string;
 }
 
 export interface PaginatedResponse<T> {

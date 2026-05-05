@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { type Feature, type PaginatedResponse, type ListParams, BasePageOptionDto } from '@/types';
+import { type Feature, type PaginatedResponse, type ListParams, BasePageOptionDto, CursorResponse, BaseCursorOptionDto } from '@/types';
 
 export const featuresApi = {
   list: async (params: ListParams = {}): Promise<PaginatedResponse<Feature>> => {
@@ -9,6 +9,31 @@ export const featuresApi = {
     }
     try {
       const response = await apiClient.get<{ data: PaginatedResponse<Feature> }>('/features', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log(e);
+    }
+    return data;
+  },
+
+  listCursor: async (params: { cursor?: string; limit?: number; keyword?: string; organization_id?: string; project_id?: string } = {}): Promise<{
+    data: Feature[];
+    paginated: {
+      next_cursor: string | null;
+      has_next: boolean;
+    };
+  }> => {
+    let data: CursorResponse<Feature> = {
+      data: [],
+      paginated: new BaseCursorOptionDto()
+    }
+    try {
+      const { organization_id, project_id, ...rest } = params;
+      const headers: Record<string, string> = {};
+      if (organization_id) headers['organization-id'] = organization_id;
+      if (project_id) headers['project-id'] = project_id;
+
+      const response = await apiClient.get<{ data: CursorResponse<Feature> }>('/features/cursor', rest, headers);
       data = response?.data;
     } catch (e: any) {
       console.log(e);
