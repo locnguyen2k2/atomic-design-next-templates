@@ -7,7 +7,7 @@ import { Icon } from "@/components/atoms/Icon";
 import { cn } from "@/lib/utils";
 import { Attribute } from "@/types/abac";
 import { SelectWithCursor } from "@/components/molecules/SelectWithCursor";
-import { useClearancesCursor, useSubscriptionsCursor, useEnvironmentsCursor, useDepartmentsCursor, useOrganizationsCursor, useProjectsCursor, useFeaturesCursor, useResourceTypesCursor } from "@/hooks";
+import { useClearancesCursor, useSubscriptionsCursor, useEnvironmentsCursor, useDepartmentsCursor, useOrganizationsCursor, useProjectsCursor, useFeaturesCursor, useResourceTypesCursor, useRolesCursor } from "@/hooks";
 
 interface PolicyEvaluatorProps {
   evalForm: any;
@@ -28,6 +28,7 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
   const [subscriptionSearch, setSubscriptionSearch] = useState("");
   const [environmentSearch, setEnvironmentSearch] = useState("");
   const [departmentSearch, setDepartmentSearch] = useState("");
+  const [roleSearch, setRoleSearch] = useState("");
   const [organizationSearch, setOrganizationSearch] = useState("");
   const [projectSearch, setProjectSearch] = useState("");
   const [featureSearch, setFeatureSearch] = useState("");
@@ -37,6 +38,7 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
   const { data: subscriptionPages, fetchNextPage: fetchNextSubscription, hasNextPage: hasNextSubscription, isFetchingNextPage: isFetchingNextSubscription, isLoading: isSubscriptionsLoading } = useSubscriptionsCursor({ keyword: subscriptionSearch });
   const { data: environmentPages, fetchNextPage: fetchNextEnvironment, hasNextPage: hasNextEnvironment, isFetchingNextPage: isFetchingNextEnvironment, isLoading: isEnvironmentsLoading } = useEnvironmentsCursor({ keyword: environmentSearch });
   const { data: departmentPages, fetchNextPage: fetchNextDepartment, hasNextPage: hasNextDepartment, isFetchingNextPage: isFetchingNextDepartment, isLoading: isDepartmentsLoading } = useDepartmentsCursor({ keyword: departmentSearch });
+  const { data: rolePages, fetchNextPage: fetchNextRole, hasNextPage: hasNextRole, isFetchingNextPage: isFetchingNextRole, isLoading: isRolesLoading } = useRolesCursor({ keyword: roleSearch, organizationId: evalForm.resource_org });
   const { data: organizationPages, fetchNextPage: fetchNextOrganization, hasNextPage: hasNextOrganization, isFetchingNextPage: isFetchingNextOrganization, isLoading: isOrganizationsLoading } = useOrganizationsCursor({ keyword: organizationSearch });
   const { data: projectPages, fetchNextPage: fetchNextProject, hasNextPage: hasNextProject, isFetchingNextPage: isFetchingNextProject, isLoading: isProjectsLoading } = useProjectsCursor({ keyword: projectSearch, organizationId: evalForm.resource_org });
   const { data: featurePages, fetchNextPage: fetchNextFeature, hasNextPage: hasNextFeature, isFetchingNextPage: isFetchingNextFeature, isLoading: isFeaturesLoading } = useFeaturesCursor({ keyword: featureSearch, organizationId: evalForm.resource_org, projectId: evalForm.resource_project });
@@ -46,9 +48,10 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
   const subscriptions = useMemo(() => subscriptionPages?.pages.flatMap((page) => page.data) || [], [subscriptionPages]);
   const environments = useMemo(() => environmentPages?.pages.flatMap((page) => page.data) || [], [environmentPages]);
   const departments = useMemo(() => departmentPages?.pages.flatMap((page) => page.data) || [], [departmentPages]);
+  const roles = useMemo(() => rolePages?.pages.flatMap((page) => page.data) || [], [rolePages]);
   const organizations = useMemo(() => organizationPages?.pages.flatMap((page) => page.data) || [], [organizationPages]);
   const projects = useMemo(() => projectPages?.pages.flatMap((page) => page.data) || [], [projectPages]);
-  const features = useMemo(() => featurePages?.pages.flatMap((page) => page.data).map((f) => ({ id: f.slug, name: f.name })) || [], [featurePages]);
+  const features = useMemo(() => featurePages?.pages.flatMap((page) => page.data).map((f) => ({ id: f.id, name: f.name })) || [], [featurePages]);
   const resourceTypes = useMemo(() => resourceTypePages?.pages.flatMap((page) => page.data).map((rt) => ({ id: rt.slug, name: rt.name })) || [], [resourceTypePages]);
   const handleOrgChange = (orgId: string) => {
     updateEvalForm("resource_org", orgId);
@@ -106,7 +109,18 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
             </div>
           </div>
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {renderSelect("subject_role", "Role", ["developer"], evalForm.subject_role)}
+            {/* {renderSelect("subject_role", "Role", ["developer"], evalForm.subject_role)} */}
+            <SelectWithCursor
+              label="Role"
+              placeholder="Select Role"
+              items={roles}
+              isLoading={isRolesLoading || isFetchingNextRole}
+              hasMore={!!hasNextRole}
+              onLoadMore={() => fetchNextRole()}
+              onSearch={(query) => setRoleSearch(query)}
+              onSelect={(item) => updateEvalForm("subject_role", item.id)}
+              selectedId={evalForm.subject_role}
+            />
             <SelectWithCursor
               label="Department"
               placeholder="Select Department"

@@ -33,6 +33,10 @@ export const policiesApi = {
     await apiClient.delete(`/policies/${id}`);
   },
 
+  evaluate: async (orgId: string, body: any): Promise<any> => {
+    return await apiClient.post(`/policies/organizations/${orgId}/evaluate`, body);
+  },
+
   listResourceTypesCursor: async (params: { cursor?: string; limit?: number; keyword?: string } = {}): Promise<{
     data: { slug: string; name: string; description: string }[];
     paginated: {

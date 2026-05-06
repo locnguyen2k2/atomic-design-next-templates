@@ -35,6 +35,7 @@ export function useAbac() {
     resource_type: '',
     resource_sensitivity: '',
     resource_env: '',
+    resource_feature: '',
     resource_owner: user?.id || '',
     action: '',
     env_time: '',
@@ -202,53 +203,84 @@ export function useAbac() {
   };
 
   const runEvaluation = async () => {
-    // Simulate policy evaluation (PDP)
-    // In a real app, this would be an API call
-    const matchedPolicies = policies.filter(p => {
-      // Basic simulation: match action and resource type
-      const actionMatch = p.action === '*' || p.action === evalForm.action;
-      const resourceMatch = p.resource === '*' || p.resource === evalForm.resource_type;
-      return actionMatch && resourceMatch;
-    });
+    if (!evalForm.resource_org) {
+      addToast({ message: 'Please select an organization', type: 'error' });
+      return;
+    }
 
-    const appliedPolicy = matchedPolicies.length > 0 ? matchedPolicies[0] : null;
-    const decision = appliedPolicy ? appliedPolicy.effect : 'DENY';
+    setIsLoading(true);
+    try {
+      const body = {
+        subject: {
+          role: evalForm.subject_role,
+          department: evalForm.subject_dept,
+          clearance: evalForm.subject_clearance,
+          mfa_verified: evalForm.subject_mfa === 'true' || evalForm.subject_mfa === true,
+          subscription: evalForm.subject_subscription,
+          location: evalForm.subject_location,
+        },
+        resource: {
+          type: evalForm.resource_type,
+          id: evalForm.resource_feature,
+          sensitivity: evalForm.resource_sensitivity,
+          environment: evalForm.resource_env,
+        },
+        action: evalForm.action,
+        context: {
+          network: evalForm.env_network,
+          risk_score: parseInt(evalForm.env_risk) || 0,
+        },
+        organization_id: evalForm.resource_org,
+      };
 
-    const result = {
-      decision,
-      reason: appliedPolicy
-        ? `Policy "${appliedPolicy.name}" matched and returned ${decision}.`
-        : 'No matching policy found. Default decision: DENY.',
-      matchedPolicies: matchedPolicies.map(p => ({ ...p, applied: p.id === appliedPolicy?.id })),
-      context: {
-        'subject.role': evalForm.subject_role,
-        'subject.department': evalForm.subject_dept,
-        'resource.org': evalForm.resource_org,
-        'resource.project': evalForm.resource_project,
-        'resource.type': evalForm.resource_type,
-        'action': evalForm.action,
-        'env.network': evalForm.env_network,
-      }
-    };
+      const response = await policiesApi.evaluate(evalForm.resource_org, body);
+      const data = response.data;
+      const decision = data.decision;
+      const appliedPolicy = data.evaluated_policies.find((p: any) => p.status === 'APPLIED');
 
-    setEvalResult(result);
+      const result = {
+        decision,
+        reason: appliedPolicy
+          ? `Policy "${appliedPolicy.name}" matched and returned ${decision}.`
+          : `Evaluation resulted in ${decision}.`,
+        matchedPolicies: data.evaluated_policies.map((p: any) => ({
+          ...p,
+          applied: p.status === 'APPLIED'
+        })),
+        context: {
+          'subject.id': data.context.subject.id,
+          'subject.email': data.context.subject.email,
+          'resource.id': data.context.resource.id,
+          'resource.slug': data.context.resource.slug,
+          'action': data.context.action,
+          'env.network': data.context.env.network,
+          'env.risk_score': data.context.env.risk_score,
+        }
+      };
 
-    const newLogEntry = {
-      id: `log-${Date.now()}`,
-      ts: new Date().toISOString(),
-      subject: `user@${evalForm.subject_dept}`,
-      action: evalForm.action,
-      resource: `${evalForm.resource_type}:target`,
-      result: decision,
-      policy: appliedPolicy ? appliedPolicy.name : 'Implicit Deny',
-      duration_ms: Math.floor(Math.random() * 10) + 2,
-    };
+      setEvalResult(result);
 
-    setEvalLog(prev => [newLogEntry, ...prev.slice(0, 19)]);
-    addToast({
-      message: `Evaluation: ${decision}`,
-      type: decision === 'ALLOW' ? 'success' : 'error'
-    });
+      const newLogEntry = {
+        id: `log-${Date.now()}`,
+        ts: new Date().toISOString(),
+        subject: data.context.subject.email || `user@${evalForm.subject_dept}`,
+        action: data.context.action,
+        resource: `${data.context.resource.type}:${data.context.resource.slug}`,
+        result: decision,
+        policy: appliedPolicy ? appliedPolicy.name : 'Implicit Deny',
+        duration_ms: Math.floor(Math.random() * 10) + 2,
+      };
+
+      setEvalLog(prev => [newLogEntry, ...prev.slice(0, 19)]);
+      addToast({
+        message: `Evaluation: ${decision}`,
+        type: decision === 'ALLOW' ? 'success' : 'error'
+      });
+    } catch (error) {
+      addToast({ message: 'Failed to run evaluation', type: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const subjectAttributes = useMemo(() => attributes.filter(a => a.category === 'SUBJECT'), [attributes]);

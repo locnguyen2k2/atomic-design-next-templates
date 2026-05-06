@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { rolesApi } from '@/api';
 import type { Role, ListParams } from '@/types';
 import { useAppStore } from '@/stores';
@@ -8,6 +8,15 @@ export function useRoles(params: ListParams = {}) {
   return useQuery({
     queryKey: ['roles', params, currentOrg],
     queryFn: () => rolesApi.list(params),
+  });
+}
+
+export function useRolesCursor(params: { limit?: number; keyword?: string; organizationId?: string } = {}) {
+  return useInfiniteQuery({
+    queryKey: ['roles', 'cursor', params],
+    queryFn: ({ pageParam }) => rolesApi.listCursor({ ...params, cursor: pageParam }),
+    initialPageParam: '',
+    getNextPageParam: (lastPage) => lastPage.paginated.has_next ? lastPage.paginated.next_cursor : undefined,
   });
 }
 
