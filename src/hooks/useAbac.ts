@@ -215,7 +215,7 @@ export function useAbac() {
           role: evalForm.subject_role,
           department: evalForm.subject_dept,
           clearance: evalForm.subject_clearance,
-          mfa_verified: evalForm.subject_mfa === 'true' || evalForm.subject_mfa === true,
+          mfa_verified: evalForm.subject_mfa === true,
           subscription: evalForm.subject_subscription,
           location: evalForm.subject_location,
         },
