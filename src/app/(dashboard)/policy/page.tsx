@@ -13,7 +13,7 @@ import { Icon } from "@/components/atoms/Icon";
 import { StatCard } from "@/components/atoms/StatCard";
 import { cn } from "@/lib/utils";
 
-export default function PermissionsPage() {
+export default function PolicyPage() {
   const { 
     metadata, 
     policies, 

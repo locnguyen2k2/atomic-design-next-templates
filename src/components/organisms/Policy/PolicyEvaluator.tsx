@@ -56,7 +56,7 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
   const handleOrgChange = (orgId: string) => {
     updateEvalForm("resource_org", orgId);
     updateEvalForm("resource_project", "");
-    updateEvalForm("resource_type", "");
+    updateEvalForm("resource_feature", "");
   };
 
   const handleResourceTypeChange = (resourceTypeId: string) => {
@@ -65,7 +65,6 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
 
   const handleProjectChange = (projectId: string) => {
     updateEvalForm("resource_project", projectId);
-    updateEvalForm("resource_type", "");
   };
 
   const renderSelect = (key: string, label: string, options: string[], value: string) => (
@@ -109,7 +108,6 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
             </div>
           </div>
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* {renderSelect("subject_role", "Role", ["developer"], evalForm.subject_role)} */}
             <SelectWithCursor
               label="Role"
               placeholder="Select Role"
@@ -192,7 +190,7 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
               onSelect={(item) => handleOrgChange(item.id)}
               selectedId={evalForm.resource_org}
             />
-            {evalForm.resource_type === "project" && (
+            {evalForm.resource_type === "project" || evalForm.resource_type === "feature" ? (
               <SelectWithCursor
                 label="Project"
                 placeholder="Select Project"
@@ -204,6 +202,8 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
                 onSelect={(item) => handleProjectChange(item.id)}
                 selectedId={evalForm.resource_project}
               />
+            ) : (
+              <></>
             )}
             {evalForm.resource_type === "feature" && (
               <SelectWithCursor

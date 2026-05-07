@@ -37,7 +37,7 @@ export function useAbac() {
     resource_env: '',
     resource_feature: '',
     resource_owner: user?.id || '',
-    action: '',
+    action: 'READ',
     env_time: '',
     env_network: '',
     env_risk: '',
@@ -221,7 +221,7 @@ export function useAbac() {
         },
         resource: {
           type: evalForm.resource_type,
-          id: evalForm.resource_feature,
+          id: evalForm?.resource_feature || evalForm?.resource_project || evalForm.resource_org,
           sensitivity: evalForm.resource_sensitivity,
           environment: evalForm.resource_env,
         },
