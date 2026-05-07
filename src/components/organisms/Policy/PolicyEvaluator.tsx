@@ -203,7 +203,7 @@ export function PolicyEvaluator({ evalForm, updateEvalForm, runEvaluation, evalR
                 selectedId={evalForm.resource_project}
               />
             ) : (
-              <></>
+              <></> 
             )}
             {evalForm.resource_type === "feature" && (
               <SelectWithCursor
