@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/atoms/Button';
-import { Icon } from '@/components/atoms/Icon';
-import { Skeleton } from '@/components/atoms/Skeleton';
-import { DateRangePicker } from '@/components/atoms/DateRangePicker';
-import { SearchForm } from '@/components/molecules/SearchForm';
-import { Pagination } from '@/components/molecules/Pagination';
-import { cn } from '@/lib/utils';
-import type { IconName } from '@/types/icon';
+import { Button } from "@/components/atoms/Button";
+import { Icon } from "@/components/atoms/Icon";
+import { Skeleton } from "@/components/atoms/Skeleton";
+import { DateRangePicker } from "@/components/atoms/DateRangePicker";
+import { SearchForm } from "@/components/molecules/SearchForm";
+import { Pagination } from "@/components/molecules/Pagination";
+import { cn } from "@/lib/utils";
+import type { IconName } from "@/types/icon";
 
 interface Column<T> {
   key: keyof T | string;
   label: string;
   sortable?: boolean;
   render?: (row: T) => React.ReactNode;
-  type?: 'text' | 'slug' | 'date' | 'org' | 'desc';
+  type?: "text" | "slug" | "date" | "org" | "desc";
 }
 
 interface DataTableProps<T> {
@@ -24,7 +24,7 @@ interface DataTableProps<T> {
   isLoading?: boolean;
   searchPlaceholder?: string;
   onSearch?: (query: string) => void;
-  onSort?: (field: string, order: 'asc' | 'desc') => void;
+  onSort?: (field: string, order: "asc" | "desc") => void;
   onPageChange?: (page: number) => void;
   onCreate?: () => void;
   onView?: (row: T) => void;
@@ -73,30 +73,16 @@ export function DataTable<T extends Record<string, unknown>>({
     <div className="data-table-wrapper">
       {/* Toolbar */}
       <div className="table-toolbar flex items-center gap-4 p-4 border-b border-border">
-        {onSearch && (
-          <SearchForm
-            placeholder={searchPlaceholder || 'Search...'}
-            onSearch={onSearch}
-          />
-        )}
-        
-        {enableDateRangeFilter && (
-          <DateRangePicker
-            value={dateRangeFilterValue}
-            onChange={onDateRangeChange}
-            label={dateRangeFilterLabel || 'Date Range'}
-            className="min-w-[300px]"
-          />
-        )}
-        
+        {onSearch && <SearchForm placeholder={searchPlaceholder || "Search..."} onSearch={onSearch} />}
+
+        {enableDateRangeFilter && <DateRangePicker value={dateRangeFilterValue} onChange={onDateRangeChange} label={dateRangeFilterLabel || "Date Range"} className="min-w-[300px]" />}
+
         {filters}
-        
+
         <div className="toolbar-spacer flex-1" />
-        
-        <span className="toolbar-results text-sm text-text-muted">
-          {pagination?.totalItems ?? data.length} records
-        </span>
-        
+
+        <span className="toolbar-results text-sm text-text-muted">{pagination?.totalItems ?? data.length} records</span>
+
         {onCreate && (
           <Button onClick={onCreate}>
             <Icon name="plus" /> Create
@@ -110,20 +96,11 @@ export function DataTable<T extends Record<string, unknown>>({
           <thead>
             <tr className="border-b border-border">
               {columns.map((col) => (
-                <th
-                  key={String(col.key)}
-                  className={cn(
-                    'px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider',
-                    col.sortable && 'cursor-pointer hover:text-text-primary'
-                  )}
-                  onClick={() => col.sortable && onSort?.(String(col.key), 'asc')}
-                >
+                <th key={String(col.key)} className={cn("px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider", col.sortable && "cursor-pointer hover:text-text-primary")} onClick={() => col.sortable && onSort?.(String(col.key), "asc")}>
                   {col.label}
                 </th>
               ))}
-              <th className="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase">
-                Actions
-              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -165,28 +142,51 @@ export function DataTable<T extends Record<string, unknown>>({
                 <tr
                   key={String(row[keyField])}
                   className="border-b border-border-subtle hover:bg-bg-surface transition-colors"
+                  onClick={(e: any) => {
+                    onView ? onView(row) : undefined;
+                    e.preventDefault();
+                  }}
                 >
                   {columns.map((col) => (
                     <td key={String(col.key)} className="px-4 py-3">
-                      {col.render ? col.render(row) : (
-                        <span className="text-sm">{String(row[col.key as keyof T] ?? '—')}</span>
-                      )}
+                      {col.render ? col.render(row) : <span className="text-sm">{String(row[col.key as keyof T] ?? "—")}</span>}
                     </td>
                   ))}
                   <td className="px-4 py-3">
                     <div className="table-cell-actions flex justify-end gap-1">
                       {onView && (
-                        <Button variant="ghost" size="sm" onClick={() => onView(row)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onView(row);
+                          }}
+                        >
                           <Icon name="eye" />
                         </Button>
                       )}
                       {onEdit && (
-                        <Button variant="ghost" size="sm" onClick={() => onEdit(row)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(row);
+                          }}
+                        >
                           <Icon name="pen" />
                         </Button>
                       )}
                       {onDelete && (
-                        <Button variant="ghost" size="sm" onClick={() => onDelete(row)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(row);
+                          }}
+                        >
                           <Icon name="trash" className="text-danger" />
                         </Button>
                       )}
@@ -200,15 +200,7 @@ export function DataTable<T extends Record<string, unknown>>({
       </div>
 
       {/* Pagination */}
-      {pagination && (
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
-          itemsPerPage={pagination.itemsPerPage}
-          onPageChange={onPageChange!}
-        />
-      )}
+      {pagination && <Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} totalItems={pagination.totalItems} itemsPerPage={pagination.itemsPerPage} onPageChange={onPageChange!} />}
     </div>
   );
 }

@@ -150,7 +150,9 @@ export function useAbac() {
         await policiesApi.update(currentOrg, selectedPolicy.id, policy);
         addToast({ message: 'Policy updated successfully', type: 'success' });
       } else {
+        console.log(policy);
         await policiesApi.create(currentOrg, policy);
+
         addToast({ message: 'Policy created successfully', type: 'success' });
       }
       fetchPolicies();

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { AbacPolicy, PolicyEffect } from "@/types/abac";
 import { Icon } from "@/components/atoms/Icon";
 import { Input } from "@/components/atoms/Input";
@@ -8,6 +8,8 @@ import { Label } from "@/components/atoms/Label";
 import { Textarea } from "@/components/atoms/Textarea";
 import { Select } from "@/components/atoms/Select";
 import { ModalDrawer } from "@/components/organisms/ModalDrawer/ModalDrawer";
+import { SelectWithCursor } from "@/components/molecules";
+import { useResourceTypesCursor } from "@/hooks";
 
 interface PolicyDrawerProps {
   isOpen: boolean;
@@ -29,6 +31,10 @@ export const PolicyDrawer: React.FC<PolicyDrawerProps> = ({ isOpen, onClose, onS
   const [jsonInputs, setJsonInputs] = useState({
     condition: "{}",
   });
+  const [resourceTypeSearch, setResourceTypeSearch] = useState("");
+  const { data: resourceTypePages, fetchNextPage: fetchNextResourceType, hasNextPage: hasNextResourceType, isFetchingNextPage: isFetchingNextResourceType, isLoading: isResourceTypesLoading } = useResourceTypesCursor({ keyword: resourceTypeSearch });
+
+  const resourceTypes = useMemo(() => resourceTypePages?.pages.flatMap((page) => page.data).map((rt) => ({ id: rt.slug, name: rt.name })) || [], [resourceTypePages]);
 
   useEffect(() => {
     if (policy) {
@@ -63,6 +69,10 @@ export const PolicyDrawer: React.FC<PolicyDrawerProps> = ({ isOpen, onClose, onS
     }
   };
 
+  const handleResourceTypeChange = (resourceTypeId: string) => {
+    setFormData({ ...formData, resource: resourceTypeId });
+  };
+
   const availableActions = ["READ", "CREATE", "UPDATE", "DELETE", "MANAGE", "*"];
 
   return (
@@ -95,36 +105,34 @@ export const PolicyDrawer: React.FC<PolicyDrawerProps> = ({ isOpen, onClose, onS
                 </div>
                 <div className="space-y-1.5">
                   <Label required>Action</Label>
-                  <Select
-                    value={formData.action}
-                    onChange={(e) => setFormData({ ...formData, action: e.target.value })}
-                    options={availableActions.map((a) => ({ value: a, label: a }))}
-                  />
+                  <Select value={formData.action} onChange={(e) => setFormData({ ...formData, action: e.target.value })} options={availableActions.map((a) => ({ value: a, label: a }))} />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <Label required>Resource</Label>
-                <Input
-                  placeholder="e.g. Project, *, or ResourceType"
-                  value={formData.resource}
-                  onChange={(e) => setFormData({ ...formData, resource: e.target.value })}
-                  className="bg-secondary/30 border-border/50 h-11 text-sm font-medium"
+                <SelectWithCursor
+                  label="Resource Type"
+                  placeholder="Select Resource Type"
+                  items={resourceTypes}
+                  isLoading={isResourceTypesLoading || isFetchingNextResourceType}
+                  hasMore={!!hasNextResourceType}
+                  onLoadMore={() => fetchNextResourceType()}
+                  onSearch={(query) => setResourceTypeSearch(query)}
+                  onSelect={(item) => handleResourceTypeChange(item.id)}
+                  selectedId={formData.resource}
                 />
               </div>
-            </>
-          )}
 
-          {activeTab === "permissions" && (
-            <div className="space-y-6">
-              <div className="space-y-1.5">
-                <Label className="flex justify-between">
-                  Logic Condition (JsonLogic)
-                  <span className="text-primary/60 lowercase font-normal italic">e.g. {'{"==": [{"var": "user.id"}, {"var": "resource.owner_id"}]}'}</span>
-                </Label>
-                <Textarea className="bg-[#050505] font-mono text-xs min-h-[300px]" value={jsonInputs.condition} onChange={(e) => setJsonInputs({ ...jsonInputs, condition: e.target.value })} />
+              <div className="space-y-6">
+                <div className="space-y-1.5">
+                  <Label className="flex justify-between">
+                    Logic Condition (JsonLogic)
+                    <span className="text-primary/60 lowercase font-normal italic">e.g. {'{"==": [{"var": "user.id"}, {"var": "resource.owner_id"}]}'}</span>
+                  </Label>
+                  <Textarea className="bg-[#050505] font-mono text-xs min-h-[300px]" value={jsonInputs.condition} onChange={(e) => setJsonInputs({ ...jsonInputs, condition: e.target.value })} />
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {activeTab === "metadata" && (

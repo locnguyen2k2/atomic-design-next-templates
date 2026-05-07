@@ -109,7 +109,7 @@ export default function DashboardPage() {
             <QuickActionCard icon="flag" label="New Feature" color="success" onClick={() => openModal("feature")} />
             <QuickActionCard icon="shield" label="New Role" color="violet" onClick={() => openModal("role")} />
             <QuickActionCard icon="users" label="Manage Users" color="warning" href="/profile" />
-            <QuickActionCard icon="key" label="Permissions" color="danger" href="/permissions" />
+            <QuickActionCard icon="key" label="Permissions" color="danger" href="/policy" />
           </div>
         </Card.Body>
       </Card>

@@ -23,7 +23,7 @@ const navItems: NavItem[] = [
   { id: "projects", label: "Projects", icon: "folder-open", href: "/projects", section: "iam" },
   { id: "features", label: "Features", icon: "flag", href: "/features", section: "iam" },
   { id: "roles", label: "Roles", icon: "shield", href: "/roles", section: "iam" },
-  { id: "permissions", label: "Permissions", icon: "key", href: "/permissions", section: "iam" },
+  { id: "permissions", label: "Policy", icon: "key", href: "/policy", section: "iam" },
   { id: "profile", label: "Profile", icon: "user", href: "/profile", section: "account" },
   { id: "settings", label: "Settings", icon: "settings", href: "/settings", section: "account" },
 ];
