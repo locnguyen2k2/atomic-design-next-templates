@@ -43,7 +43,6 @@ export default function OrganizationsPage() {
   const updateMutation = useUpdateOrganization();
   const deleteMutation = useDeleteOrganization();
 
-  console.log("organizations", organizations);
   const handleCreate = async (data: any) => {
     try {
       await createMutation.mutateAsync(data);

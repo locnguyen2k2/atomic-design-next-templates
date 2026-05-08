@@ -218,6 +218,7 @@ class ApiClient {
     return this.request<T>(endpoint, {
       method: 'DELETE',
       headers,
+      body: JSON.stringify({})
     });
   }
 }

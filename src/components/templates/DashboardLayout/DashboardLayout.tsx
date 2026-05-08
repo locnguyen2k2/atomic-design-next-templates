@@ -35,9 +35,6 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
     const found = organizations.find((o) => o.id === currentOrg);
     if (found) return found;
 
-    if (organizations.length > 0 && !currentOrg) {
-    }
-
     return organizations[0];
   }, [organizations, currentOrg]);
 

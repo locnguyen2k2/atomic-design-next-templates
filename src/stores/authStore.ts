@@ -89,7 +89,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
 
       checkAuth: async () => {
         const { accessToken, refreshToken, logout, setTokens, setUser, setLoading } = get();
-        
+
         if (!accessToken) {
           if (refreshToken) {
             try {

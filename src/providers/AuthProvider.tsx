@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useCallback } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useAuthStore } from '@/stores/authStore';
+import { useEffect, useState, useCallback } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore";
+import { useAppStore } from "@/stores";
 
-const publicPaths = ['/login', '/register'];
+const publicPaths = ["/login", "/register"];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, checkAuth, isLoading } = useAuthStore();
+  const { currentOrg, setCurrentOrg } = useAppStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -27,14 +29,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
     if (!isAuthenticated && !isPublicPath) {
-      router.push('/login');
+      router.push("/login");
     } else if (isAuthenticated && isPublicPath) {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   }, [isAuthenticated, isInitialized, pathname, router]);
 
-  // If not initialized, show loading spinner
-  // If initialized but still loading, only show spinner if not authenticated
   if (!isInitialized || (isLoading && !isAuthenticated)) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-[#09090b]">
