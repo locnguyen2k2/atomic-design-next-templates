@@ -2,13 +2,19 @@ import apiClient from './client';
 import { type Feature, type PaginatedResponse, type ListParams, BasePageOptionDto, CursorResponse, BaseCursorOptionDto } from '@/types';
 
 export const featuresApi = {
-  list: async (params: ListParams = {}): Promise<PaginatedResponse<Feature>> => {
+  list: async (params: ListParams = {}, project_id: string, organization_id: string): Promise<PaginatedResponse<Feature>> => {
     let data: PaginatedResponse<Feature> = {
       data: [],
       paginated: new BasePageOptionDto()
     }
+    if (!project_id || !organization_id || project_id === "" || organization_id === "") {
+      return data;
+    }
+    const headers: Record<string, string> = {};
+    if (project_id) headers['project-id'] = project_id;
+    if (organization_id) headers['organization-id'] = organization_id;
     try {
-      const response = await apiClient.get<{ data: PaginatedResponse<Feature> }>('/features', params);
+      const response = await apiClient.get<{ data: PaginatedResponse<Feature> }>('/features', params, headers);
       data = response?.data;
     } catch (e: any) {
       console.log(e);

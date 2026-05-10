@@ -48,7 +48,6 @@ export default function FeaturesPage() {
     return params;
   };
 
-  const { data: features, isLoading } = useFeatures(getApiParams());
   const createMutation = useCreateFeature();
   const updateMutation = useUpdateFeature();
   const deleteMutation = useDeleteFeature();
@@ -99,6 +98,8 @@ export default function FeaturesPage() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
   };
+
+  const { data: features, isLoading } = useFeatures(getApiParams());
 
   return (
     <div className="animate-fade-in">

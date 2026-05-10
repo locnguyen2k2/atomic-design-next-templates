@@ -6,8 +6,8 @@ import { useAppStore } from '@/stores';
 export function useFeatures(params: ListParams = {}) {
   const { currentOrg, currentProject } = useAppStore();
   return useQuery({
-    queryKey: ['features', params, currentOrg, currentProject],
-    queryFn: () => featuresApi.list(params),
+    queryKey: ['features', params],
+    queryFn: () => featuresApi.list(params, currentProject, currentOrg),
   });
 }
 
