@@ -38,6 +38,10 @@ export default function ProjectsPage() {
       params.to_date = dateRange.to.toISOString().split("T")[0];
     }
 
+    if (currentOrg) {
+      params.organization_id = currentOrg;
+    }
+
     return params;
   };
 

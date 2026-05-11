@@ -1,83 +1,71 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/atoms/Input';
-import { FormField } from '@/components/molecules/FormField';
-import { Checkbox } from '@/components/atoms/Checkbox';
-import { useState, useEffect } from 'react';
+import { Input } from "@/components/atoms/Input";
+import { FormField } from "@/components/molecules/FormField";
+import { Checkbox } from "@/components/atoms/Checkbox";
+import { useState, useEffect } from "react";
+import { useAppStore } from "@/stores";
 
 interface FeatureFormProps {
   data?: any;
-  mode: 'create' | 'view' | 'edit';
+  mode: "create" | "view" | "edit";
   onChange?: (data: any) => void;
 }
 
-export function FeatureForm({ data, mode, onChange }: FeatureFormProps) {
+export function FeatureForm(props: FeatureFormProps) {
+  const { data, mode, onChange } = props;
+  const { currentProject, currentOrg } = useAppStore();
   const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    description: '',
-    organization_id: '',
-    project_id: '',
+    name: "",
+    slug: "",
+    description: "",
+    organization_id: currentOrg || "",
+    project_id: currentProject || "",
     is_enabled: false,
     ...data,
   });
 
-  const isReadOnly = mode === 'view';
+  const isReadOnly = mode === "view";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
-    const newData = { 
-      ...formData, 
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value 
+    const newData = {
+      ...formData,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     };
+    console.log(newData, "FeatureForm", props);
     setFormData(newData);
     if (onChange) onChange(newData);
   };
 
   useEffect(() => {
-    if (data) setFormData({ ...formData, ...data });
+    if (mode === "create" && !data) {
+      if (onChange) onChange(formData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data && JSON.stringify(data) !== JSON.stringify(formData)) {
+      setFormData((prev: any) => ({ ...prev, ...data }));
+    }
   }, [data]);
 
   return (
     <div className="space-y-4">
       <FormField label="Feature Name" required>
-        <Input
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="e.g. Beta Access"
-          disabled={isReadOnly}
-        />
+        <Input name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Beta Access" disabled={isReadOnly} />
       </FormField>
 
       <FormField label="Feature Slug" required hint="Identifier for code integration">
-        <Input
-          name="slug"
-          value={formData.slug}
-          onChange={handleChange}
-          placeholder="e.g. beta_access"
-          disabled={isReadOnly || mode === 'edit'}
-        />
+        <Input name="slug" value={formData.slug} onChange={handleChange} placeholder="e.g. beta_access" disabled={isReadOnly || mode === "edit"} />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Organization ID" required>
-          <Input
-            name="organization_id"
-            value={formData.organization_id}
-            onChange={handleChange}
-            placeholder="org_123"
-            disabled={isReadOnly || mode === 'edit'}
-          />
+          <Input name="organization_id" value={formData.organization_id} onChange={handleChange} placeholder="org_123" disabled={isReadOnly || mode === "edit"} />
         </FormField>
         <FormField label="Project ID" required>
-          <Input
-            name="project_id"
-            value={formData.project_id}
-            onChange={handleChange}
-            placeholder="proj_456"
-            disabled={isReadOnly || mode === 'edit'}
-          />
+          <Input name="project_id" value={formData.project_id} onChange={handleChange} placeholder="proj_456" disabled={isReadOnly || mode === "edit"} />
         </FormField>
       </div>
 

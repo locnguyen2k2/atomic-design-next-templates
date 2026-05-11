@@ -1,30 +1,29 @@
 "use client";
 
 import React from "react";
-import { useAbac } from "@/hooks/useAbac";
+import { usePolicy } from "@/hooks/usePolicy";
 import { PolicyList } from "@/components/templates/ListPageTemplate/PolicyList";
 import { AttributeList } from "@/components/organisms/Policy/AttributeList";
-import { PolicyEvaluator } from "@/components/organisms/Policy/PolicyEvaluator";
-import { EvaluationLog } from "@/components/organisms/Policy/EvaluationLog";
-import { PolicyDrawer } from "@/components/organisms/Policy/PolicyDrawer";
+import { PolicyEvaluator, PolicyDrawer } from "@/components/molecules/PolicyForm";
 import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Icon } from "@/components/atoms/Icon";
 import { StatCard } from "@/components/atoms/StatCard";
 import { cn } from "@/lib/utils";
+import { EvaluationLog } from "@/components/organisms/Policy/EvaluationLog";
 
 export default function PolicyPage() {
-  const { 
-    metadata, 
-    policies, 
+  const {
+    metadata,
+    policies,
     isLoading,
     pagination,
-    activeTab, 
-    setActiveTab, 
-    policyFilter, 
-    setPolicyFilter, 
-    policySearch, 
-    setPolicySearch, 
+    activeTab,
+    setActiveTab,
+    policyFilter,
+    setPolicyFilter,
+    policySearch,
+    setPolicySearch,
     dateRange,
     setDateRange,
     onSort,
@@ -37,19 +36,19 @@ export default function PolicyPage() {
     setAttrDateRange,
     onAttrSort,
     setAttrPage,
-    isDrawerOpen, 
-    selectedPolicy, 
-    openDrawer, 
-    closeDrawer, 
-    savePolicy, 
+    isDrawerOpen,
+    selectedPolicy,
+    openDrawer,
+    closeDrawer,
+    savePolicy,
     deletePolicy,
     evalForm,
     updateEvalForm,
     evalResult,
     setEvalResult,
     runEvaluation,
-    evalLog
-  } = useAbac();
+    evalLog,
+  } = usePolicy();
 
   const tabs = [
     { id: "policies", label: "Policies", icon: "scroll" },
@@ -110,30 +109,30 @@ export default function PolicyPage() {
       {/* Tab Content */}
       <div className="min-h-[400px]">
         {activeTab === "policies" && (
-          <PolicyList 
-            policies={policies} 
+          <PolicyList
+            policies={policies}
             isLoading={isLoading}
             pagination={pagination}
-            filter={policyFilter} 
-            onFilterChange={setPolicyFilter} 
-            search={policySearch} 
-            onSearchChange={setPolicySearch} 
+            filter={policyFilter}
+            onFilterChange={setPolicyFilter}
+            search={policySearch}
+            onSearchChange={setPolicySearch}
             dateRange={dateRange}
             onDateRangeChange={setDateRange}
             onPageChange={setPage}
             onSort={onSort}
-            onDelete={deletePolicy} 
-            onEdit={openDrawer} 
-            onDuplicate={(p) => openDrawer({ ...p, id: "", name: `${p.name} (Copy)` })} 
+            onDelete={deletePolicy}
+            onEdit={openDrawer}
+            onDuplicate={(p) => openDrawer({ ...p, id: "", name: `${p.name} (Copy)` })}
             onCreate={() => openDrawer()}
           />
         )}
 
         {activeTab === "attributes" && (
-          <AttributeList 
-            subjectAttributes={metadata.subjectAttributes} 
-            resourceAttributes={metadata.resourceAttributes} 
-            environmentAttributes={metadata.environmentAttributes} 
+          <AttributeList
+            subjectAttributes={metadata.subjectAttributes}
+            resourceAttributes={metadata.resourceAttributes}
+            environmentAttributes={metadata.environmentAttributes}
             isLoading={isAttrsLoading}
             search={attrSearch}
             onSearch={setAttrSearch}
@@ -147,14 +146,7 @@ export default function PolicyPage() {
 
         {activeTab === "evaluator" && (
           <div className="animate-fade-up">
-            <PolicyEvaluator 
-              evalForm={evalForm}
-              updateEvalForm={updateEvalForm}
-              runEvaluation={runEvaluation}
-              evalResult={evalResult}
-              setEvalResult={setEvalResult}
-              metadata={metadata}
-            />
+            <PolicyEvaluator evalForm={evalForm} updateEvalForm={updateEvalForm} runEvaluation={runEvaluation} evalResult={evalResult} setEvalResult={setEvalResult} metadata={metadata} />
           </div>
         )}
 

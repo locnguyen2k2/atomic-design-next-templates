@@ -50,8 +50,16 @@ export function RoleForm({ data, mode, activeTab = 'general', onChange }: RoleFo
   };
 
   useEffect(() => {
-    if (data) setFormData({ ...formData, ...data });
-  }, [data]);
+    if (mode === 'create' && !data) {
+      if (onChange) onChange(formData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data && JSON.stringify(data) !== JSON.stringify(formData)) {
+      setFormData((prev: any) => ({ ...prev, ...data }));
+    }
+  }, [data, formData]);
 
   if (activeTab === 'permissions') {
     return (

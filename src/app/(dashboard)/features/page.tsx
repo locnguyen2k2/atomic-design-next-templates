@@ -33,6 +33,10 @@ export default function FeaturesPage() {
   const getApiParams = () => {
     const params: any = {};
 
+    if (currentProject) {
+      params.project_id = currentProject;
+    }
+
     if (searchQuery) {
       params.search = searchQuery;
     }
@@ -66,6 +70,7 @@ export default function FeaturesPage() {
 
   const handleCreate = async (data: any) => {
     try {
+      console.log(data, "Create Feature");
       await createMutation.mutateAsync(data);
       addToast({ message: "Feature created successfully", type: "success" });
     } catch (error) {

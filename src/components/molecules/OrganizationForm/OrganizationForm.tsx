@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/atoms/Input';
-import { FormField } from '@/components/molecules/FormField';
-import { useState, useEffect } from 'react';
+import { Input } from "@/components/atoms/Input";
+import { FormField } from "@/components/molecules/FormField";
+import { useState, useEffect } from "react";
 
 interface OrganizationFormProps {
   data?: any;
@@ -27,8 +27,13 @@ export function OrganizationForm({ data, mode, onChange }: OrganizationFormProps
   };
 
   useEffect(() => {
-    console.log(data);
-    if (data) {
+    if (mode === 'create' && !data) {
+      if (onChange) onChange(formData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data && JSON.stringify(data) !== JSON.stringify(formData)) {
       setFormData({
         name: '',
         slug: '',

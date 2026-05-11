@@ -3,6 +3,7 @@
 import { Input } from '@/components/atoms/Input';
 import { FormField } from '@/components/molecules/FormField';
 import { useState, useEffect } from 'react';
+import { useAppStore } from '@/stores';
 
 interface ProjectFormProps {
   data?: any;
@@ -11,11 +12,12 @@ interface ProjectFormProps {
 }
 
 export function ProjectForm({ data, mode, onChange }: ProjectFormProps) {
+  const { currentOrg } = useAppStore();
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
     description: '',
-    organization_id: '',
+    organization_id: currentOrg || '',
     ...data,
   });
 
@@ -29,7 +31,15 @@ export function ProjectForm({ data, mode, onChange }: ProjectFormProps) {
   };
 
   useEffect(() => {
-    if (data) setFormData({ ...formData, ...data });
+    if (mode === 'create' && !data) {
+      if (onChange) onChange(formData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (data && JSON.stringify(data) !== JSON.stringify(formData)) {
+      setFormData((prev: any) => ({ ...prev, ...data }));
+    }
   }, [data]);
 
   return (

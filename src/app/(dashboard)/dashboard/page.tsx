@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/molecules/StatCard";
 import { Card } from "@/components/atoms/Card";
-import { Badge } from "@/components/atoms/Badge";
 import { Button } from "@/components/atoms/Button";
 import { Icon } from "@/components/atoms/Icon";
 import { QuickActionCard } from "@/components/molecules/QuickActionCard";
 import { ActivityList } from "@/components/molecules/ActivityList";
-import { WeeklyChart } from "@/components/molecules/WeeklyChart";
+import { GrowthChart, type ChartType } from "@/components/molecules/GrowthChart/GrowthChart";
 import { ModalDrawer } from "@/components/organisms/ModalDrawer";
 import { OrganizationForm } from "@/components/molecules/OrganizationForm";
 import { ProjectForm } from "@/components/molecules/ProjectForm";
@@ -16,10 +16,18 @@ import { FeatureForm } from "@/components/molecules/FeatureForm";
 import { RoleForm } from "@/components/molecules/RoleForm";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useActivity } from "@/hooks/useActivity";
+import { useGrowthStats } from "@/hooks/useGrowthStats";
+import { type GrowthEntity, type GrowthPeriod } from "@/api/stats";
 
 export default function DashboardPage() {
-  const { stats, isLoading } = useDashboardStats();
+  const { stats } = useDashboardStats();
   const { activities } = useActivity();
+
+  const [growthEntity, setGrowthEntity] = useState<GrowthEntity>("features");
+  const [growthPeriod, setGrowthPeriod] = useState<GrowthPeriod>("week");
+  const [chartType, setChartType] = useState<ChartType>("column");
+
+  const { growthData, title: growthTitle, isLoading: isGrowthLoading } = useGrowthStats(growthEntity, growthPeriod);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEntity, setModalEntity] = useState<"organization" | "project" | "feature" | "role" | null>(null);
@@ -58,24 +66,64 @@ export default function DashboardPage() {
         <StatCard icon="flag" label="Features" value={stats.features} color="success" percentage={55} hint={`${stats.currentOrgFeatures} in current org`} />
         <StatCard icon="shield" label="Roles" value={stats.roles} color="violet" percentage={90} hint="RBAC configured" />
         <StatCard icon="users" label="Active Users" value={stats.activeUsers} color="warning" percentage={72} hint="+3 new this week" />
-        <StatCard icon="check" label="API Health" value="99.8%" color="success" percentage={99} hint="All systems normal" />
+        <StatCard icon="users" label="Staffs" value="99.8%" color="success" percentage={99} hint="+2 this month" />
       </div>
 
       {/* Charts + Activity */}
       <div className="content-grid grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Weekly Activity Chart */}
+        {/* Growth Activity Chart */}
         <Card className="flex flex-col h-full">
-          <Card.Header className="flex items-center justify-between">
+          <Card.Header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <Card.Title>Weekly Activity</Card.Title>
-              <Card.Subtitle>API requests & events this week</Card.Subtitle>
+              <Card.Title>{growthTitle || "Growth Activity"}</Card.Title>
+              <Card.Subtitle>Monitor trends across your entities</Card.Subtitle>
             </div>
-            <Badge variant="success" dot>
-              Live
-            </Badge>
+            <div className="flex flex-wrap items-center gap-2">
+              <select 
+                value={growthEntity} 
+                onChange={(e) => setGrowthEntity(e.target.value as GrowthEntity)}
+                className="bg-bg-surface text-text-primary text-xs rounded border border-border px-2 py-1 outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="features">Features</option>
+                <option value="projects">Projects</option>
+                <option value="organizations">Orgs</option>
+                <option value="roles">Roles</option>
+                <option value="users">Users</option>
+              </select>
+              <select 
+                value={growthPeriod} 
+                onChange={(e) => setGrowthPeriod(e.target.value as GrowthPeriod)}
+                className="bg-bg-surface text-text-primary text-xs rounded border border-border px-2 py-1 outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="day">Day</option>
+                <option value="week">Week</option>
+                <option value="month">Month</option>
+                <option value="year">Year</option>
+              </select>
+              <div className="flex bg-bg-surface p-1 rounded border border-border">
+                {(['column', 'line', 'pie'] as ChartType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setChartType(t)}
+                    className={cn(
+                      "p-1 rounded text-xs transition-colors",
+                      chartType === t ? "bg-primary text-primary-foreground" : "text-text-muted hover:text-text-primary"
+                    )}
+                  >
+                    <Icon name={t === 'column' ? 'grid-2' : t === 'line' ? 'trend-up' : 'list'} size="sm" />
+                  </button>
+                ))}
+              </div>
+            </div>
           </Card.Header>
           <Card.Body className="flex-1 flex flex-col justify-center py-6">
-            <WeeklyChart data={stats.weeklyData} />
+            {isGrowthLoading ? (
+              <div className="flex items-center justify-center h-48 animate-pulse text-text-muted">
+                Loading data...
+              </div>
+            ) : (
+              <GrowthChart data={growthData} type={chartType} />
+            )}
           </Card.Body>
         </Card>
 

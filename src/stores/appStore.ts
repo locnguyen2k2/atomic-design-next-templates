@@ -33,6 +33,7 @@ interface AppState {
   modalEntity: 'organization' | 'project' | 'feature' | 'role' | null;
   modalData: Record<string, unknown> | null;
   openModal: (mode: 'create' | 'view' | 'edit', entity: string, data?: Record<string, unknown>) => void;
+  updateModalData: (data: Record<string, unknown>) => void;
   closeModal: () => void;
 }
 
@@ -75,6 +76,9 @@ export const useAppStore = create<AppState>()(
         modalEntity: entity as AppState['modalEntity'],
         modalData: data || null,
       }),
+      updateModalData: (data) => set((state) => ({
+        modalData: state.modalData ? { ...state.modalData, ...data } : data,
+      })),
       closeModal: () => set({
         modalOpen: false,
         modalMode: 'create',

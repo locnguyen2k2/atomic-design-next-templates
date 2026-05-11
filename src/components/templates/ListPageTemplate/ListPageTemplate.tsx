@@ -63,7 +63,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   onSearch,
   emptyState,
 }: ListPageTemplateProps<T>) {
-  const { modalOpen, modalMode, modalEntity, modalData, openModal, closeModal, addToast } = useAppStore();
+  const { modalOpen, modalMode, modalEntity, modalData, openModal, closeModal, updateModalData, addToast } = useAppStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -119,12 +119,10 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
   };
 
   const handleView = (row: T) => {
-    console.log("Viewing row:", row);
     openModal("view", modalEntity || "organization", row);
   };
 
   const handleEdit = (row: T) => {
-    console.log("Editing row:", row);
     openModal("edit", modalEntity || "organization", row);
   };
 
@@ -200,7 +198,7 @@ export function ListPageTemplate<T extends Record<string, unknown>>({
 
       {/* Modal Drawer */}
       <ModalDrawer open={modalOpen} mode={modalMode} entity={modalEntity || "organization"} data={modalData} onClose={closeModal} onSave={handleSave} onDelete={handleDeleteFromModal}>
-        {({ activeTab }) => renderForm && renderForm({ data: modalData, mode: modalMode, activeTab })}
+        {({ activeTab }) => renderForm && renderForm({ data: modalData, mode: modalMode, activeTab, onChange: updateModalData })}
       </ModalDrawer>
     </>
   );

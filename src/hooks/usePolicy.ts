@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { AbacData, AbacPolicy, PolicyEffect, Attribute } from '@/types/abac';
+import { AbacPolicy, Attribute } from '@/types/abac';
 import { useAppStore } from '@/stores/appStore';
 import { policiesApi } from '@/api/policies';
 import { attributesApi } from '@/api/attributes';
 import { BasePageOptionDto } from '@/types';
 import { useUser } from './useUser';
 
-export function useAbac() {
+export function usePolicy() {
   const currentOrg = useAppStore((state) => state.currentOrg);
   const { data: user } = useUser();
   const addToast = useAppStore((state) => state.addToast);
