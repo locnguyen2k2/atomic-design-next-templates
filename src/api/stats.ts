@@ -13,15 +13,38 @@ export interface GrowthResponse {
     title: string;
     from: string;
     to: string;
+    min?: {
+      label: string;
+      value: number;
+    };
+    max?: {
+      label: string;
+      value: number;
+    };
+  };
+  timestamp: string;
+}
+
+export interface PercentGrowthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    percent_growth: number;
+    total: number;
+    current: number;
+    title: string;
   };
   timestamp: string;
 }
 
 export type GrowthPeriod = 'day' | 'week' | 'month' | 'year';
-export type GrowthEntity = 'features' | 'projects' | 'organizations' | 'roles' | 'users';
+export type GrowthEntity = 'features' | 'projects' | 'organizations' | 'roles' | 'users' | 'staffs';
 
 export const statsApi = {
   getGrowth: async (entity: GrowthEntity, orgId: string, period: GrowthPeriod): Promise<GrowthResponse> => {
     return await apiClient.get<GrowthResponse>(`/${entity}/growth/${orgId}`, { period });
+  },
+  getPercentGrowth: async (entity: string, period: GrowthPeriod): Promise<PercentGrowthResponse> => {
+    return await apiClient.get<PercentGrowthResponse>(`/${entity}/percent-growth`, { period });
   },
 };

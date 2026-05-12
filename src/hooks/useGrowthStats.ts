@@ -16,6 +16,8 @@ export function useGrowthStats(entity: GrowthEntity, period: GrowthPeriod) {
   return {
     growthData: data?.data?.data,
     title: data?.data?.title,
+    min: data?.data?.min,
+    max: data?.data?.max,
     isLoading,
     error,
     refetch,

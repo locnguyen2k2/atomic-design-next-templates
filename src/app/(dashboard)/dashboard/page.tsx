@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const [growthPeriod, setGrowthPeriod] = useState<GrowthPeriod>("week");
   const [chartType, setChartType] = useState<ChartType>("column");
 
-  const { growthData, title: growthTitle, isLoading: isGrowthLoading } = useGrowthStats(growthEntity, growthPeriod);
+  const { growthData, title: growthTitle, min: growthMin, max: growthMax, isLoading: isGrowthLoading } = useGrowthStats(growthEntity, growthPeriod);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [modalEntity, setModalEntity] = useState<"organization" | "project" | "feature" | "role" | null>(null);
@@ -61,12 +61,12 @@ export default function DashboardPage() {
 
       {/* Stats Grid */}
       <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8 stagger-children">
-        <StatCard icon="building" label="Organizations" value={stats.organizations} color="primary" percentage={78} hint="+2 this month" />
-        <StatCard icon="folder-open" label="Projects" value={stats.projects} color="accent" percentage={62} hint={`${stats.currentOrgProjects} in current org`} />
-        <StatCard icon="flag" label="Features" value={stats.features} color="success" percentage={55} hint={`${stats.currentOrgFeatures} in current org`} />
+        <StatCard icon="building" label="Organizations" value={stats.organizations} color="primary" percentage={stats.orgGrowth} hint={`+${stats.orgGrowth}% this month`} />
+        <StatCard icon="folder-open" label="Projects" value={stats.projects} color="accent" percentage={stats.projectGrowth} hint={`${stats.currentOrgProjects} in current org`} />
+        <StatCard icon="flag" label="Features" value={stats.features} color="success" percentage={stats.featureGrowth} hint={`${stats.currentOrgFeatures} in current org`} />
         <StatCard icon="shield" label="Roles" value={stats.roles} color="violet" percentage={90} hint="RBAC configured" />
         <StatCard icon="users" label="Active Users" value={stats.activeUsers} color="warning" percentage={72} hint="+3 new this week" />
-        <StatCard icon="users" label="Staffs" value="99.8%" color="success" percentage={99} hint="+2 this month" />
+        <StatCard icon="users" label="Staffs" value={stats.staffs} color="success" percentage={stats.staffGrowth} hint={`+${stats.staffGrowth}% this month`} />
       </div>
 
       {/* Charts + Activity */}
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                 Loading data...
               </div>
             ) : (
-              <GrowthChart data={growthData} type={chartType} />
+              <GrowthChart data={growthData} min={growthMin} max={growthMax} type={chartType} />
             )}
           </Card.Body>
         </Card>
