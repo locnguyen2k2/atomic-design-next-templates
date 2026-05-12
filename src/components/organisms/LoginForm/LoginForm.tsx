@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input } from "@/components/atoms";
+import { Button, Input, Icon } from "@/components/atoms";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faArrowRight, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import type { CaptchaData } from "@/types";
 
 export function LoginForm() {
   const router = useRouter();
@@ -14,21 +15,50 @@ export function LoginForm() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaInput, setCaptchaInput] = useState("");
+  const [captchaData, setCaptchaData] = useState<CaptchaData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshingCaptcha, setIsRefreshingCaptcha] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchCaptcha = async () => {
+    setIsRefreshingCaptcha(true);
+    try {
+      const response = await authApi.getCaptcha();
+      setCaptchaData(response.data);
+    } catch (err) {
+      console.error("Failed to fetch captcha:", err);
+    } finally {
+      setIsRefreshingCaptcha(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCaptcha();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaData) return;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await authApi.login({ username, password });
+      const response = await authApi.login({
+        username,
+        password,
+        captcha_id: captchaData.captcha_id,
+        captcha: captchaInput
+      });
       setAuth(response.data.user, response.data.token);
       router.push("/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Invalid username or password");
+      setError(err.response?.data?.message || "Invalid username, password, or captcha");
+      // Refresh captcha on failure
+      fetchCaptcha();
+      setCaptchaInput("");
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +82,41 @@ export function LoginForm() {
           >
             Forgot password?
           </button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-4">
+          <div className="flex-1 h-12 bg-surface-secondary rounded-lg overflow-hidden border border-border flex items-center justify-center relative group">
+            {captchaData ? (
+              <img
+                src={captchaData.captcha}
+                alt="Captcha"
+                className="h-full w-full object-contain"
+              />
+            ) : (
+              <div className="w-full h-full animate-pulse bg-muted/20" />
+            )}
+            <button
+              type="button"
+              onClick={fetchCaptcha}
+              disabled={isRefreshingCaptcha}
+              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+            >
+              <Icon name="refresh" className={isRefreshingCaptcha ? "animate-spin" : ""} />
+            </button>
+          </div>
+          <div className="w-1/2">
+            <Input
+              id="captcha"
+              placeholder="Captcha"
+              type="text"
+              required
+              value={captchaInput}
+              onChange={(e) => setCaptchaInput(e.target.value)}
+              leftIcon={<FontAwesomeIcon icon={faShieldAlt} className="w-4 h-4" />}
+            />
+          </div>
         </div>
       </div>
 

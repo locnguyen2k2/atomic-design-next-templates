@@ -97,6 +97,13 @@ export interface CursorResponse<T> {
 export interface LoginRequest {
   username: string;
   password: string;
+  captcha_id: string;
+  captcha: string;
+}
+
+export interface CaptchaData {
+  captcha_id: string;
+  captcha: string;
 }
 
 export interface LoginResponse {

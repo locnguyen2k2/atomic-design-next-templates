@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { LoginRequest, RegisterRequest, User } from '@/types';
+import type { LoginRequest, RegisterRequest, User, CaptchaData } from '@/types';
 
 export interface AuthResponse {
   data: {
@@ -13,8 +13,18 @@ export interface AuthResponse {
   }
 }
 
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  timestamp: string;
+}
 
 export const authApi = {
+  getCaptcha: async (): Promise<ApiResponse<CaptchaData>> => {
+    return await apiClient.post('/users/captcha', {});
+  },
+
   login: async (params: LoginRequest): Promise<AuthResponse> => {
     return await apiClient.post('/users/login', params);
   },
