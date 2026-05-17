@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input, Icon } from "@/components/atoms";
+import { Button, Input, Icon, LiquidGlass } from "@/components/atoms";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -49,7 +49,7 @@ export function LoginForm() {
         username,
         password,
         captcha_id: captchaData.captcha_id,
-        captcha: captchaInput
+        captcha: captchaInput,
       });
       setAuth(response.data.user, response.data.token);
       router.push("/dashboard");
@@ -65,71 +65,52 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
+    <form onSubmit={handleSubmit}>
+      <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
+        {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
 
-      <Input id="username" label="Username" placeholder="Enter your username" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} leftIcon={<FontAwesomeIcon icon={faUser} className="w-4 h-4" />} autoComplete="username" />
+        <Input id="username" label="Username" placeholder="Enter your username" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} leftIcon={<FontAwesomeIcon icon={faUser} className="w-4 h-4" />} autoComplete="username" />
 
-      <div className="space-y-1">
-        <Input id="password" label="Password" placeholder="••••••••" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />} autoComplete="current-password" />
-        <div className="flex justify-end">
-          <button
-            type="button"
-            className="text-xs text-primary hover:text-primary/80 transition-colors"
-            onClick={() => {
-              /* Forgot password logic */
-            }}
-          >
-            Forgot password?
-          </button>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-4">
-          <div className="flex-1 h-12 bg-surface-secondary rounded-lg overflow-hidden border border-border flex items-center justify-center relative group">
-            {captchaData ? (
-              <img
-                src={captchaData.captcha}
-                alt="Captcha"
-                className="h-full w-full object-contain"
-              />
-            ) : (
-              <div className="w-full h-full animate-pulse bg-muted/20" />
-            )}
+        <div className="space-y-1">
+          <Input id="password" label="Password" placeholder="••••••••" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />} autoComplete="current-password" />
+          <div className="flex justify-end">
             <button
               type="button"
-              onClick={fetchCaptcha}
-              disabled={isRefreshingCaptcha}
-              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+              className="text-xs text-primary hover:text-primary/80 transition-colors"
+              onClick={() => {
+                /* Forgot password logic */
+              }}
             >
-              <Icon name="refresh" className={isRefreshingCaptcha ? "animate-spin" : ""} />
+              Forgot password?
             </button>
           </div>
-          <div className="w-1/2">
-            <Input
-              id="captcha"
-              placeholder="Captcha"
-              type="text"
-              required
-              value={captchaInput}
-              onChange={(e) => setCaptchaInput(e.target.value)}
-              leftIcon={<FontAwesomeIcon icon={faShieldAlt} className="w-4 h-4" />}
-            />
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-12 bg-surface-secondary rounded-lg overflow-hidden border border-border flex items-center justify-center relative group">
+              {captchaData ? <img src={captchaData.captcha} alt="Captcha" className="h-full w-full object-contain" /> : <div className="w-full h-full animate-pulse bg-muted/20" />}
+              <button type="button" onClick={fetchCaptcha} disabled={isRefreshingCaptcha} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <Icon name="refresh" className={isRefreshingCaptcha ? "animate-spin" : ""} />
+              </button>
+            </div>
+            <div className="w-1/2">
+              <Input id="captcha" placeholder="Captcha" type="text" required value={captchaInput} onChange={(e) => setCaptchaInput(e.target.value)} leftIcon={<FontAwesomeIcon icon={faShieldAlt} className="w-4 h-4" />} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <Button type="submit" variant="primary" size="lg" className="w-full shadow-lg shadow-primary/20" loading={isLoading} rightIcon={!isLoading && <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />}>
-        Sign In
-      </Button>
+        <Button type="submit" variant="primary" size="lg" className="w-full shadow-lg shadow-primary/20" loading={isLoading} rightIcon={!isLoading && <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />}>
+          Sign In
+        </Button>
 
-      <div className="text-center text-sm text-text-secondary">
-        Don&apos;t have an account?{" "}
-        <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/register")}>
-          Create account
-        </button>
-      </div>
+        <div className="text-center text-sm text-text-secondary">
+          Don&apos;t have an account?{" "}
+          <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/register")}>
+            Create account
+          </button>
+        </div>
+      </LiquidGlass>
     </form>
   );
 }

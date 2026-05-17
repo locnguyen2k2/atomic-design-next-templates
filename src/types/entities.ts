@@ -94,17 +94,16 @@ export interface CursorResponse<T> {
   paginated: BaseCursorOptionDto,
 }
 
-export interface LoginRequest {
-  username: string;
-  password: string;
-  captcha_id: string;
-  captcha: string;
-}
-
 export interface CaptchaData {
   captcha_id: string;
   captcha: string;
 }
+
+export interface LoginRequest extends CaptchaData {
+  username: string;
+  password: string;
+}
+
 
 export interface LoginResponse {
   access_token: string;
@@ -112,7 +111,7 @@ export interface LoginResponse {
   user: User;
 }
 
-export interface RegisterRequest {
+export interface RegisterRequest extends CaptchaData {
   username: string;
   email: string;
   password: string;

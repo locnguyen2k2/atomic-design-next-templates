@@ -11,3 +11,4 @@ export { Label } from './Label';
 export { Textarea } from './Textarea';
 export { Select } from './Select';
 export { StatCard } from './StatCard';
+export { LiquidGlass } from './LiquidGlass';

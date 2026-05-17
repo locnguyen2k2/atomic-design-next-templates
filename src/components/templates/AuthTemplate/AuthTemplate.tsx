@@ -27,7 +27,7 @@ export function AuthTemplate({ children, title, subtitle }: AuthTemplateProps) {
           {subtitle && <p className="text-text-secondary mt-2">{subtitle}</p>}
         </div>
 
-        <div className={cn("bg-bg-elevated border border-border p-8 rounded-3xl shadow-2xl", "backdrop-blur-sm bg-bg-elevated/80")}>{children}</div>
+        <div className={cn("bg-bg-elevated rounded-3xl shadow-2xl", "backdrop-blur-sm bg-bg-elevated/80")}>{children}</div>
 
         <div className="text-center mt-8">
           <p className="text-text-muted text-sm">&copy; {new Date().getFullYear()} NexusIAM. All rights reserved.</p>
