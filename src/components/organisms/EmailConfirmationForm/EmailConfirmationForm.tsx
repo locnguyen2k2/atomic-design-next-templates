@@ -113,7 +113,7 @@ export function EmailConfirmationForm() {
 
         <div className="text-center text-sm text-text-secondary space-y-2">
           <div>
-            Didn't receive the code?{" "}
+            Didn&apos;t receive the code?{" "}
             <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/resend-email-verification")}>
               Resend Email
             </button>
