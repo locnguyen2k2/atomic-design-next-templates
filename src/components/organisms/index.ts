@@ -5,3 +5,5 @@ export { ModalDrawer } from './ModalDrawer';
 export { PermissionMatrix } from './PermissionMatrix';
 export { LoginForm } from './LoginForm';
 export { RegisterForm } from './RegisterForm';
+export { EmailConfirmationForm } from './EmailConfirmationForm';
+export { ResendEmailConfirmationForm } from './ResendEmailConfirmationForm';

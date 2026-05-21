@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { LoginRequest, RegisterRequest, User, CaptchaData } from '@/types';
+import type { LoginRequest, RegisterRequest, EmailConfirmationRequest, User, CaptchaData } from '@/types';
 
 export interface AuthResponse {
   data: {
@@ -58,5 +58,13 @@ export const authApi = {
         'Authorization': `Bearer ${accessToken}`,
       }
     );
+  },
+
+  confirmEmail: async (params: EmailConfirmationRequest): Promise<AuthResponse> => {
+    return await apiClient.post('/users/verify-email', params);
+  },
+
+  resendEmailVerification: async (params: { captcha_id: string; captcha: string }): Promise<ApiResponse<{ message: string }>> => {
+    return await apiClient.post('/users/resend-email-verification', params);
   },
 };

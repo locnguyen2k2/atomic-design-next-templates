@@ -2,30 +2,23 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Icon, Input, LiquidGlass } from "@/components/atoms";
+import { Button, Input, Icon, LiquidGlass } from "@/components/atoms";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faEnvelope, faLock, faArrowRight, faAddressCard, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { CaptchaData } from "@/types";
+import { faArrowRight, faShieldAlt, faKey } from "@fortawesome/free-solid-svg-icons";
+import type { CaptchaData } from "@/types";
 
-export function RegisterForm() {
+export function EmailConfirmationForm() {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    first_name: "",
-    last_name: "",
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [code, setCode] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaData, setCaptchaData] = useState<CaptchaData | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshingCaptcha, setIsRefreshingCaptcha] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchCaptcha = async () => {
     setIsRefreshingCaptcha(true);
@@ -43,25 +36,47 @@ export function RegisterForm() {
     fetchCaptcha();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
-  };
+  useEffect(() => {
+    const verifyToken = async () => {
+      const accessToken = localStorage.getItem("nexusiam-token");
+      if (!accessToken) {
+        router.push("/login");
+        return;
+      }
+
+      try {
+        await authApi.verifyAccessToken(accessToken);
+      } catch (error) {
+        console.error("Invalid access token:", error);
+        router.push("/login");
+      }
+    };
+
+    verifyToken();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaData) return;
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await authApi.register({ ...formData, captcha_id: captchaData!.captcha_id, captcha: captchaInput });
+      const response = await authApi.confirmEmail({
+        captcha_id: captchaData.captcha_id,
+        captcha: captchaInput,
+        code,
+      });
       setAuth(response.data.user, response.data.token);
-      router.push("/email-confirmation");
+      router.push("/login");
     } catch (err: any) {
-      console.error("Registration error:", err);
-      setError(err.response?.data?.message || "Failed to create account. Please try again.");
-    } finally {
+      console.error("Email confirmation error:", err);
+      setError(err.response?.data?.message || "Invalid confirmation code or captcha");
+      // Refresh captcha on failure
       fetchCaptcha();
       setCaptchaInput("");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -71,16 +86,12 @@ export function RegisterForm() {
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input id="first_name" label="First Name" placeholder="John" type="text" required value={formData.first_name} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faAddressCard} className="w-4 h-4" />} />
-          <Input id="last_name" label="Last Name" placeholder="Doe" type="text" required value={formData.last_name} onChange={handleChange} />
+        <div className="text-center mb-4">
+          <h3 className="text-lg font-semibold text-text-primary">Confirm Your Email</h3>
+          <p className="text-sm text-text-secondary mt-1">Enter the confirmation code sent to your email</p>
         </div>
 
-        <Input id="username" label="Username" placeholder="johndoe" type="text" required value={formData.username} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faUser} className="w-4 h-4" />} autoComplete="username" />
-
-        <Input id="email" label="Email Address" placeholder="john@example.com" type="email" required value={formData.email} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faEnvelope} className="w-4 h-4" />} autoComplete="email" />
-
-        <Input id="password" label="Password" placeholder="••••••••" type="password" required value={formData.password} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />} autoComplete="new-password" />
+        <Input id="code" label="Confirmation Code" placeholder="Enter your code" type="text" required value={code} onChange={(e) => setCode(e.target.value)} leftIcon={<FontAwesomeIcon icon={faKey} className="w-4 h-4" />} autoComplete="one-time-code" />
 
         <div className="space-y-2">
           <div className="flex items-center gap-4">
@@ -96,15 +107,23 @@ export function RegisterForm() {
           </div>
         </div>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full mt-2 shadow-lg shadow-primary/20" loading={isLoading} rightIcon={!isLoading && <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />}>
-          Create Account
+        <Button type="submit" variant="primary" size="lg" className="w-full shadow-lg shadow-primary/20" loading={isLoading} rightIcon={!isLoading && <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />}>
+          Confirm Email
         </Button>
 
-        <div className="text-center text-sm text-text-secondary pt-2">
-          Already have an account?{" "}
-          <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/login")}>
-            Sign in
-          </button>
+        <div className="text-center text-sm text-text-secondary space-y-2">
+          <div>
+            Didn't receive the code?{" "}
+            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/resend-email-verification")}>
+              Resend Email
+            </button>
+          </div>
+          <div>
+            Already confirmed?{" "}
+            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/login")}>
+              Sign in
+            </button>
+          </div>
         </div>
       </LiquidGlass>
     </form>

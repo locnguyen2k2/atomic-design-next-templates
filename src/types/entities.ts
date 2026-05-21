@@ -118,3 +118,7 @@ export interface RegisterRequest extends CaptchaData {
   first_name: string;
   last_name: string;
 }
+
+export interface EmailConfirmationRequest extends CaptchaData {
+  code: string;
+}

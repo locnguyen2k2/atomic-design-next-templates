@@ -6,6 +6,7 @@ import { useAppStore, useAuthStore } from "@/stores";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useMe } from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,8 +15,9 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) {
   const { theme, toggleTheme, sidebarCollapsed, toggleSidebar, currentOrg, setCurrentOrg } = useAppStore();
-  const { setUser } = useAuthStore();
+  const { setUser, user: baseInfo } = useAuthStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const router = useRouter();
 
   const { data: userData, isLoading } = useMe();
 
@@ -39,6 +41,10 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   }, [organizations, currentOrg]);
 
   useEffect(() => {
+    if (baseInfo?.status === "INACTIVE") {
+      router.push("/email-confirmation");
+      return;
+    }
     if (userData) {
       setUser(userData);
     }
