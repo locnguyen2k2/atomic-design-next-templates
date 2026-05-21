@@ -6,7 +6,7 @@ import { Button, Input, Icon, LiquidGlass } from "@/components/atoms";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLock, faArrowRight, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLock, faArrowRight, faShieldAlt, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import type { CaptchaData } from "@/types";
 
 export function LoginForm() {
@@ -15,6 +15,7 @@ export function LoginForm() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaData, setCaptchaData] = useState<CaptchaData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +73,22 @@ export function LoginForm() {
         <Input id="username" label="Username" placeholder="Enter your username" type="text" required value={username} onChange={(e) => setUsername(e.target.value)} leftIcon={<FontAwesomeIcon icon={faUser} className="w-4 h-4" />} autoComplete="username" />
 
         <div className="space-y-1">
-          <Input id="password" label="Password" placeholder="••••••••" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />} autoComplete="current-password" />
+          <Input
+            id="password"
+            label="Password"
+            placeholder="••••••••"
+            type={showPassword ? "text" : "password"}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />}
+            rightIcon={
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="focus:outline-none hover:text-primary transition-colors">
+                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} className="w-4 h-4" />
+              </button>
+            }
+            autoComplete="current-password"
+          />
           <div className="flex justify-end">
             <button
               type="button"

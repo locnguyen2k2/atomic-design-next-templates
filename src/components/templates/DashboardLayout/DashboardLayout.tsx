@@ -15,29 +15,32 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) {
   const { theme, toggleTheme, sidebarCollapsed, toggleSidebar, currentOrg, setCurrentOrg } = useAppStore();
-  const { setUser, user: baseInfo } = useAuthStore();
+  const { setUser, user: baseInfo, isLoading } = useAuthStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const router = useRouter();
 
-  const { data: userData, isLoading } = useMe();
+  // const { data: userData, isLoading } = useMe();
 
   const organizations = useMemo(() => {
-    if (userData?.organizations) {
-      return userData.organizations.map((orgRole) => ({
+    if (baseInfo?.organizations) {
+      return baseInfo.organizations.map((orgRole) => ({
         id: orgRole.id,
         name: orgRole.name,
       }));
     }
     return [];
-  }, [userData]);
+  }, [baseInfo]);
 
   const currentOrgData = useMemo(() => {
-    if (organizations.length === 0) return { id: "", name: "No Organization" };
+    if (baseInfo?.status === "ACTIVE") {
+      if (organizations.length === 0) return { id: "", name: "No Organization" };
 
-    const found = organizations.find((o) => o.id === currentOrg);
-    if (found) return found;
+      const found = organizations.find((o) => o.id === currentOrg);
+      if (found) return found;
 
-    return organizations[0];
+      return organizations[0];
+    }
+    return { id: "", name: "No Organization" };
   }, [organizations, currentOrg]);
 
   useEffect(() => {
@@ -45,18 +48,20 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
       router.push("/email-confirmation");
       return;
     }
-    if (userData) {
-      setUser(userData);
+    if (baseInfo) {
+      setUser(baseInfo);
     }
-  }, [userData, setUser]);
+  }, [baseInfo, setUser]);
 
   useEffect(() => {
-    if (organizations.length > 0 && !currentOrg) {
-      setCurrentOrg(organizations[0].id);
-    } else if (organizations.length > 0 && currentOrg) {
-      const found = organizations.find((o) => o.id === currentOrg);
-      if (!found) {
+    if (baseInfo?.status === "ACTIVE") {
+      if (organizations.length > 0 && !currentOrg) {
         setCurrentOrg(organizations[0].id);
+      } else if (organizations.length > 0 && currentOrg) {
+        const found = organizations.find((o) => o.id === currentOrg);
+        if (!found) {
+          setCurrentOrg(organizations[0].id);
+        }
       }
     }
   }, [organizations, currentOrg, setCurrentOrg]);
@@ -86,9 +91,9 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   };
 
   const user = {
-    first_name: userData?.first_name || "User",
-    last_name: userData?.last_name || "",
-    role: userData?.organizations?.find((o) => o.id === currentOrg)?.roles?.[0]?.name || "Member",
+    first_name: baseInfo?.first_name || "User",
+    last_name: baseInfo?.last_name || "",
+    role: baseInfo?.organizations?.find((o) => o.id === currentOrg)?.roles?.[0]?.name || "Member",
   };
 
   if (isLoading) {

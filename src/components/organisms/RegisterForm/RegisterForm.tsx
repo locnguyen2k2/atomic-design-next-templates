@@ -6,7 +6,7 @@ import { Button, Icon, Input, LiquidGlass } from "@/components/atoms";
 import { useAuthStore } from "@/stores/authStore";
 import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faEnvelope, faLock, faArrowRight, faAddressCard, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faEnvelope, faLock, faArrowRight, faAddressCard, faShieldAlt, faEyeSlash, faEye } from "@fortawesome/free-solid-svg-icons";
 import { CaptchaData } from "@/types";
 
 export function RegisterForm() {
@@ -26,7 +26,7 @@ export function RegisterForm() {
   const [captchaInput, setCaptchaInput] = useState("");
   const [captchaData, setCaptchaData] = useState<CaptchaData | null>(null);
   const [isRefreshingCaptcha, setIsRefreshingCaptcha] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   const fetchCaptcha = async () => {
     setIsRefreshingCaptcha(true);
     try {
@@ -80,7 +80,22 @@ export function RegisterForm() {
 
         <Input id="email" label="Email Address" placeholder="john@example.com" type="email" required value={formData.email} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faEnvelope} className="w-4 h-4" />} autoComplete="email" />
 
-        <Input id="password" label="Password" placeholder="••••••••" type="password" required value={formData.password} onChange={handleChange} leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />} autoComplete="new-password" />
+        <Input
+          id="password"
+          label="Password"
+          placeholder="••••••••"
+          type={showPassword ? "text" : "password"}
+          required
+          value={formData.password}
+          onChange={handleChange}
+          leftIcon={<FontAwesomeIcon icon={faLock} className="w-4 h-4" />}
+          autoComplete="new-password"
+          rightIcon={
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-text-tertiary hover:text-text-primary transition-colors">
+              {showPassword ? <FontAwesomeIcon icon={faEyeSlash} className="w-4 h-4" /> : <FontAwesomeIcon icon={faEye} className="w-4 h-4" />}
+            </button>
+          }
+        />
 
         <div className="space-y-2">
           <div className="flex items-center gap-4">

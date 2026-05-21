@@ -6,10 +6,11 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   hint?: string;
   leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   required?: boolean;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, error, hint, leftIcon, required, id, ...props }, ref) => {
+export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, label, error, hint, leftIcon, rightIcon, required, id, ...props }, ref) => {
   return (
     <div className="form-group">
       {label && (
@@ -18,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, labe
         </label>
       )}
       <div className="relative">
-        {leftIcon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">{leftIcon}</span>}
+        {leftIcon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted z-10">{leftIcon}</span>}
         <input
           ref={ref}
           id={id}
@@ -28,11 +29,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, labe
             "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary",
             "transition-all duration-200",
             leftIcon && "!pl-10",
+            rightIcon && "!pr-10",
             error && "border-danger focus:ring-danger/50",
             className,
           )}
           {...props}
         />
+        {rightIcon && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted z-10">{rightIcon}</span>}
       </div>
       {hint && <span className="form-hint">{hint}</span>}
       {error && <span className="form-error">{error}</span>}

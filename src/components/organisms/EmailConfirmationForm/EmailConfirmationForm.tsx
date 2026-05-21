@@ -81,6 +81,8 @@ export function EmailConfirmationForm() {
     }
   };
 
+  const logout = useAuthStore((state) => state.logout);
+
   return (
     <form onSubmit={handleSubmit}>
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
@@ -120,7 +122,15 @@ export function EmailConfirmationForm() {
           </div>
           <div>
             Already confirmed?{" "}
-            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/login")}>
+            <button
+              type="button"
+              className="text-primary font-semibold hover:underline"
+              onClick={() => {
+                logout().then(() => {
+                  router.push("/login");
+                });
+              }}
+            >
               Sign in
             </button>
           </div>

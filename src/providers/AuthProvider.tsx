@@ -8,7 +8,7 @@ import { useAppStore } from "@/stores";
 const publicPaths = ["/login", "/register"];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, checkAuth, isLoading } = useAuthStore();
+  const { isAuthenticated, checkAuth, isLoading, user } = useAuthStore();
   const { currentOrg, setCurrentOrg } = useAppStore();
   const pathname = usePathname();
   const router = useRouter();
@@ -30,8 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!isAuthenticated && !isPublicPath) {
       router.push("/login");
-    } else if (isAuthenticated && isPublicPath) {
+    } else if (isAuthenticated && isPublicPath && user && user.status === "ACTIVE") {
       router.push("/dashboard");
+    } else if (isAuthenticated && isPublicPath && user && user.status !== "ACTIVE") {
+      router.push("/email-confirmation");
     }
   }, [isAuthenticated, isInitialized, pathname, router]);
 
