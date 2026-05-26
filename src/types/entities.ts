@@ -58,6 +58,19 @@ export interface Department extends BaseEntity {
   code: string;
 }
 
+export interface SystemLog {
+  id: string;
+  action: string;
+  entity: string;
+  entity_id?: string;
+  user_id: string;
+  user_name?: string;
+  ip_address?: string;
+  user_agent?: string;
+  metadata?: Record<string, any>;
+  created_at: string;
+}
+
 export interface User {
   id: string;
   username: string;

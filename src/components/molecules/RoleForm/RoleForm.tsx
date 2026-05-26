@@ -4,6 +4,7 @@ import { Input } from '@/components/atoms/Input';
 import { FormField } from '@/components/molecules/FormField';
 import { PermissionMatrix } from '@/components/organisms/PermissionMatrix';
 import { usePermissions } from '@/hooks/usePermissions';
+import { RecentActivityTab } from '@/components/molecules/RecentActivityTab/RecentActivityTab';
 import { useState, useEffect } from 'react';
 
 interface RoleFormProps {
@@ -75,19 +76,13 @@ export function RoleForm({ data, mode, activeTab = 'general', onChange }: RoleFo
     );
   }
 
-  if (activeTab === 'metadata') {
+  if (activeTab === 'recent_activity') {
     return (
-      <div className="space-y-4 text-sm text-text-muted">
-        <div>
-          <span className="font-medium">Created at:</span> {formData.created_at ? new Date(formData.created_at).toLocaleString() : 'N/A'}
-        </div>
-        <div>
-          <span className="font-medium">Updated at:</span> {formData.updated_at ? new Date(formData.updated_at).toLocaleString() : 'N/A'}
-        </div>
-        <div>
-          <span className="font-medium">ID:</span> {formData.id || 'N/A'}
-        </div>
-      </div>
+      <RecentActivityTab
+        entityId={formData.id}
+        createdAt={formData.created_at}
+        updatedAt={formData.updated_at}
+      />
     );
   }
 

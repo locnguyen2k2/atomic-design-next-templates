@@ -9,6 +9,7 @@ import { Textarea } from "@/components/atoms/Textarea";
 import { Select } from "@/components/atoms/Select";
 import { ModalDrawer } from "@/components/organisms/ModalDrawer/ModalDrawer";
 import { SelectWithCursor } from "@/components/molecules";
+import { RecentActivityTab } from "@/components/molecules/RecentActivityTab/RecentActivityTab";
 import { useResourceTypesCursor } from "@/hooks";
 
 interface PolicyDrawerProps {
@@ -135,31 +136,12 @@ export const PolicyDrawer: React.FC<PolicyDrawerProps> = ({ isOpen, onClose, onS
             </>
           )}
 
-          {activeTab === "metadata" && (
-            <div className="p-8 text-center bg-secondary/10 rounded-xl border border-dashed border-border">
-              <Icon name="history" size="lg" className="mx-auto mb-4 text-text-muted" />
-              <p className="text-sm text-text-secondary">Policy history and metadata will be displayed here.</p>
-              {policy && (
-                <div className="mt-6 space-y-2 text-left text-xs font-mono text-text-muted">
-                  <div className="flex justify-between border-b border-border/50 pb-1">
-                    <span>ID</span>
-                    <span>{policy.id}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-border/50 pb-1">
-                    <span>Organization ID</span>
-                    <span>{policy.organization_id || "N/A"}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-border/50 pb-1">
-                    <span>Created At</span>
-                    <span>{new Date(policy.created_at).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Updated At</span>
-                    <span>{new Date(policy.updated_at).toLocaleString()}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+          {activeTab === "recent_activity" && (
+            <RecentActivityTab
+              entityId={policy?.id}
+              createdAt={policy?.created_at}
+              updatedAt={policy?.updated_at}
+            />
           )}
         </div>
       )}

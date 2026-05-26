@@ -77,7 +77,7 @@ export function Header({ breadcrumb, theme, onThemeToggle, onSearch, user, onMob
           </Button>
           
           <Link href="/profile" className="flex items-center gap-2 mr-2">
-            <Avatar initials={`${user.first_name[0]}${user.last_name[0]}`} size="sm" />
+            <Avatar initials={`${user.first_name?.[0] || ''}${user.last_name?.[0] || ''}`} size="sm" />
             <span className="hidden lg:block text-sm">{user.first_name}</span>
           </Link>
 

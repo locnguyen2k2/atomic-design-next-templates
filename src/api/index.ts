@@ -9,4 +9,5 @@ export { subscriptionsApi } from './subscriptions';
 export { environmentsApi } from './environments';
 export { departmentsApi } from './departments';
 export { policiesApi } from './policies';
+export { systemLogsApi } from './system-logs';
 export { default as apiClient } from './client';

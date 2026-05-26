@@ -14,7 +14,7 @@ interface NavItem {
   icon: Parameters<typeof Icon>[0]["name"];
   badge?: number;
   href: string;
-  section: "main" | "iam" | "account";
+  section: "main" | "iam" | "system" | "account";
 }
 
 const navItems: NavItem[] = [
@@ -24,6 +24,7 @@ const navItems: NavItem[] = [
   { id: "features", label: "Features", icon: "flag", href: "/features", section: "iam" },
   { id: "roles", label: "Roles", icon: "shield", href: "/roles", section: "iam" },
   { id: "permissions", label: "Policy", icon: "key", href: "/policy", section: "iam" },
+  { id: "logs", label: "System Logs", icon: "scroll", href: "/logs", section: "system" },
   { id: "profile", label: "Profile", icon: "user", href: "/profile", section: "account" },
   { id: "settings", label: "Settings", icon: "settings", href: "/settings", section: "account" },
 ];
@@ -156,6 +157,21 @@ export function Sidebar({ currentOrg, organizations, onOrgSwitch, collapsed, onT
                   </Link>
                 ))}
 
+              <div className="nav-section-label text-xs font-semibold text-text-muted uppercase tracking-wider mb-2 mt-4">System</div>
+              {navItems
+                .filter((item) => item.section === "system")
+                .map((item) => (
+                  <Link key={item.id} href={item.href} className={cn("nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1", "text-text-secondary hover:text-text-primary hover:bg-bg-surface", "transition-colors duration-200", pathname === item.href && "active bg-primary-dim text-primary")}>
+                    <Icon name={item.icon} />
+                    <span className="flex-1 text-sm">{item.label}</span>
+                    {item.badge !== undefined && (
+                      <Badge variant="muted" className="text-xs">
+                        {item.badge}
+                      </Badge>
+                    )}
+                  </Link>
+                ))}
+
               <div className="nav-section-label text-xs font-semibold text-text-muted uppercase tracking-wider mb-2 mt-4">Account</div>
               {navItems
                 .filter((item) => item.section === "account")
@@ -204,9 +220,11 @@ export function Sidebar({ currentOrg, organizations, onOrgSwitch, collapsed, onT
   );
 }
 
-function getInitials(name: string): string {
+function getInitials(name: string | undefined | null): string {
+  if (!name) return "";
   return name
     .split(" ")
+    .filter(Boolean)
     .map((w) => w[0])
     .join("")
     .substring(0, 2)

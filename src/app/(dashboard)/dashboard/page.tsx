@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { StatCard } from "@/components/molecules/StatCard";
 import { Card } from "@/components/atoms/Card";
@@ -15,13 +16,13 @@ import { ProjectForm } from "@/components/molecules/ProjectForm";
 import { FeatureForm } from "@/components/molecules/FeatureForm";
 import { RoleForm } from "@/components/molecules/RoleForm";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { useActivity } from "@/hooks/useActivity";
+import { useSystemLogs } from "@/hooks/useSystemLogs";
 import { useGrowthStats } from "@/hooks/useGrowthStats";
 import { type GrowthEntity, type GrowthPeriod } from "@/api/stats";
 
 export default function DashboardPage() {
   const { stats } = useDashboardStats();
-  const { activities } = useActivity();
+  const { logs } = useSystemLogs({ page: 1, limit: 5 });
 
   const [growthEntity, setGrowthEntity] = useState<GrowthEntity>("features");
   const [growthPeriod, setGrowthPeriod] = useState<GrowthPeriod>("week");
@@ -134,12 +135,15 @@ export default function DashboardPage() {
               <Card.Title>Recent Activity</Card.Title>
               <Card.Subtitle>Latest actions across all entities</Card.Subtitle>
             </div>
-            <Button variant="ghost" size="sm" className="h-8 text-xs">
+            <Link 
+              href="/logs" 
+              className="inline-flex items-center justify-center h-8 px-3 text-xs font-medium rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-surface transition-colors"
+            >
               View all <Icon name="chevron-right" className="ml-1" size="sm" />
-            </Button>
+            </Link>
           </Card.Header>
           <Card.Body className="p-0 overflow-y-auto max-h-[400px]">
-            <ActivityList activities={activities} />
+            <ActivityList activities={logs} />
           </Card.Body>
         </Card>
       </div>

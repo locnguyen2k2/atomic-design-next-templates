@@ -30,7 +30,7 @@ export function ModalDrawer({
   onDelete,
   children,
 }: ModalDrawerProps) {
-  const [activeTab, setActiveTab] = useState<'general' | 'metadata' | 'permissions'>('general');
+  const [activeTab, setActiveTab] = useState<'general' | 'recent_activity' | 'permissions'>('general');
   const [width, setWidth] = useState(480);
   const drawerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -128,11 +128,11 @@ export function ModalDrawer({
         <button
           className={cn(
             'modal-tab',
-            activeTab === 'metadata' && 'active'
+            activeTab === 'recent_activity' && 'active'
           )}
-          onClick={() => setActiveTab('metadata')}
+          onClick={() => setActiveTab('recent_activity')}
         >
-          <Icon name="history" /> Metadata
+          <Icon name="history" /> Recent Activity
         </button>
         {entity === 'role' && (
           <button
