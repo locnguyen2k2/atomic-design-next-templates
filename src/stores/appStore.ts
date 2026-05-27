@@ -53,7 +53,10 @@ export const useAppStore = create<AppState>()(
       toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
       currentOrg: '',
-      setCurrentOrg: (orgId) => set({ currentOrg: orgId }),
+      setCurrentOrg: (orgId) => {
+        console.log(orgId);
+        set({ currentOrg: orgId });
+      },
 
       currentProject: '',
       setCurrentProject: (projectId) => set({ currentProject: projectId }),

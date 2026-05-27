@@ -55,7 +55,7 @@ export function LoginForm() {
       setAuth(response.data.user, response.data.token);
       router.push("/dashboard");
     } catch (err: any) {
-      console.error("Login error:", err);
+      console.log("Login error:", err);
       setError(err.response?.data?.message || "Invalid username, password, or captcha");
       // Refresh captcha on failure
       fetchCaptcha();

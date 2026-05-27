@@ -11,7 +11,7 @@ export const systemLogsApi = {
       const response = await apiClient.get<{ data: PaginatedResponse<SystemLog> }>('/system/logs', params);
       data = response?.data;
     } catch (e: any) {
-      console.error('Failed to fetch system logs:', e);
+      console.log('Failed to fetch system logs:', e);
     }
     return data;
   },

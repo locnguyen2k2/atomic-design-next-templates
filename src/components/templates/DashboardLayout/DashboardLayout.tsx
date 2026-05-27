@@ -24,7 +24,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   const organizations = useMemo(() => {
     if (baseInfo?.organizations) {
       return baseInfo.organizations.map((orgRole) => ({
-        id: orgRole.id,
+        id: orgRole?.organization_id || orgRole.id,
         name: orgRole.name,
       }));
     }
@@ -41,7 +41,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
       return organizations[0];
     }
     return { id: "", name: "No Organization" };
-  }, [organizations, currentOrg]);
+  }, [baseInfo?.status, organizations, currentOrg]);
 
   useEffect(() => {
     if (baseInfo?.status === "INACTIVE") {
@@ -51,7 +51,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
     if (baseInfo) {
       setUser(baseInfo);
     }
-  }, [baseInfo, setUser]);
+  }, [baseInfo, router, setUser]);
 
   useEffect(() => {
     if (baseInfo?.status === "ACTIVE") {
@@ -64,7 +64,7 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
         }
       }
     }
-  }, [organizations, currentOrg, setCurrentOrg]);
+  }, [organizations, currentOrg, setCurrentOrg, baseInfo?.status]);
 
   useEffect(() => {
     setMobileSidebarOpen(false);

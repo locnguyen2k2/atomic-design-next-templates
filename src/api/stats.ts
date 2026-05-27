@@ -1,3 +1,4 @@
+import { tr } from 'date-fns/locale';
 import apiClient from './client';
 
 export interface GrowthData {
@@ -42,9 +43,39 @@ export type GrowthEntity = 'features' | 'projects' | 'organizations' | 'roles' |
 
 export const statsApi = {
   getGrowth: async (entity: GrowthEntity, orgId: string, period: GrowthPeriod): Promise<GrowthResponse> => {
-    return await apiClient.get<GrowthResponse>(`/${entity}/growth/${orgId}`, { period });
+    try {
+      return await apiClient.get<GrowthResponse>(`/${entity}/growth/${orgId}`, { period });
+    } catch (e: any) {
+      return {
+        success: false,
+        message: 'Failed to fetch growth data',
+        data: {
+          data: {
+            labels: [],
+            values: [],
+          },
+          title: '',
+          from: '',
+          to: '',
+        },
+        timestamp: '',
+      } as GrowthResponse;
+    }
   },
   getPercentGrowth: async (entity: string, period: GrowthPeriod): Promise<PercentGrowthResponse> => {
-    return await apiClient.get<PercentGrowthResponse>(`/${entity}/percent-growth`, { period });
+    try {
+      return await apiClient.get<PercentGrowthResponse>(`/${entity}/percent-growth`, { period });
+    } catch (e: any) {
+      return {
+        success: false,
+        message: 'Failed to fetch percent growth',
+        data: {
+          percent_growth: 0,
+          total: 0,
+          current: 0,
+          title: '',
+        },
+      } as PercentGrowthResponse;
+    }
   },
 };

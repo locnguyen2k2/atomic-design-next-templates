@@ -43,7 +43,7 @@ export default function LogsPage() {
       label: "User",
       render: (row: SystemLog) => (
         <div className="flex flex-col">
-          <span className="text-sm text-text-primary">{row.user_name || "System"}</span>
+          <span className="text-sm text-text-primary">{row.created_by || "System"}</span>
           <span className="text-[10px] text-text-muted font-mono">{row.ip_address}</span>
         </div>
       ),
@@ -52,12 +52,12 @@ export default function LogsPage() {
 
   return (
     <div className="animate-fade-in">
-      <ListPageTemplate<SystemLog>
+      <ListPageTemplate
         title="System Logs"
         subtitle="Audit trail of all actions performed in the system"
         icon="scroll"
         color="primary"
-        data={logs}
+        data={logs as any}
         columns={columns as any}
         keyField="id"
         isLoading={isLoading}

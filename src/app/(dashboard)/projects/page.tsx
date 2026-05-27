@@ -22,7 +22,7 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationSearch, setOrganizationSearch] = useState("");
 
-  const { addToast, currentOrg, setCurrentOrg } = useAppStore();
+  const { addToast, currentOrg, setCurrentProject } = useAppStore();
 
   const getApiParams = () => {
     const params: any = {};
@@ -121,7 +121,7 @@ export default function ProjectsPage() {
               hasMore={!!hasNextPage}
               onLoadMore={() => fetchNextPage()}
               onSearch={(query) => setOrganizationSearch(query)}
-              onSelect={(item) => setCurrentOrg(item.id)}
+              onSelect={(item) => setCurrentProject(item.id)}
               selectedId={currentOrg}
             />
           </div>

@@ -14,7 +14,7 @@ function getOrganizationId(): string | null {
       return parsed.state.currentOrg || null;
     }
   } catch (e) {
-    console.error('Error parsing nexusiam-storage', e);
+    console.log('Error parsing nexusiam-storage', e);
   }
   return null;
 }
@@ -28,7 +28,7 @@ function getProjectId(): string | null {
       return parsed.state.currentProject || null;
     }
   } catch (e) {
-    console.error('Error parsing nexusiam-storage', e);
+    console.log('Error parsing nexusiam-storage', e);
   }
   return null;
 }
@@ -42,7 +42,7 @@ function getRefreshToken(): string | null {
       return parsed.state.refreshToken || null;
     }
   } catch (e) {
-    console.error('Error parsing nexusiam-auth-storage', e);
+    console.log('Error parsing nexusiam-auth-storage', e);
   }
   return null;
 }
@@ -90,13 +90,13 @@ class ApiClient {
             localStorage.setItem('nexusiam-auth-storage', JSON.stringify(parsed));
           }
         } catch (e) {
-          console.error('Error updating auth storage', e);
+          console.log('Error updating auth storage', e);
         }
       }
 
       return newAccessToken;
     } catch (error) {
-      console.error('Token refresh error:', error);
+      console.log('Token refresh error:', error);
       return null;
     }
   }
@@ -178,7 +178,11 @@ class ApiClient {
           }
         }
 
-        throw new Error(`HTTP error! status: ${response.status}`);
+        return Promise.reject({
+          status: response.status,
+          message: errorData.message || 'An error occurred',
+          details: errorData,
+        });
       }
 
       const contentType = response.headers.get('content-type');

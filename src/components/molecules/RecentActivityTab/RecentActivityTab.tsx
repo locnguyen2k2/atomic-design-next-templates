@@ -54,7 +54,7 @@ export function RecentActivityTab({ entityId, createdAt, updatedAt }: RecentActi
                     <span className="text-[10px] text-text-muted font-mono">{new Date(log.created_at).toLocaleDateString()}</span>
                   </div>
                   <div className="text-xs text-text-secondary truncate">
-                    By {log.user_name || 'System'}
+                    By {log.created_by || 'System'}
                   </div>
                 </div>
               </div>

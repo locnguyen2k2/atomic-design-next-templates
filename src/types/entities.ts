@@ -64,7 +64,7 @@ export interface SystemLog {
   entity: string;
   entity_id?: string;
   user_id: string;
-  user_name?: string;
+  created_by?: string;
   ip_address?: string;
   user_agent?: string;
   metadata?: Record<string, any>;
@@ -80,7 +80,7 @@ export interface User {
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   created_at: string;
   updated_at: string;
-  organizations: (Organization & { roles: Role[] })[];
+  organizations: (Organization & { roles: Role[], organization_id: string })[];
 }
 
 export interface ListParams {

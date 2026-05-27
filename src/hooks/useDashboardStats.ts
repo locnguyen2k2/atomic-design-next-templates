@@ -45,7 +45,7 @@ export function useDashboardStats() {
           currentOrgFeatures: features.data.current,
         }));
       } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
+        console.log('Error fetching dashboard stats:', error);
       } finally {
         setIsLoading(false);
       }

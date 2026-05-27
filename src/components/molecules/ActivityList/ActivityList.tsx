@@ -43,7 +43,7 @@ export function ActivityList({ activities }: ActivityListProps) {
                 {activity.entity_id && <span className="text-[10px] text-text-muted ml-1 font-mono">({activity.entity_id})</span>}
               </div>
               <div className="text-xs text-text-secondary">
-                By {activity.user_name || 'System'}{activity.ip_address && <span className="text-text-muted ml-1">• {activity.ip_address}</span>}
+                By {activity.created_by || 'System'}{activity.ip_address && <span className="text-text-muted ml-1">• {activity.ip_address}</span>}
               </div>
             </div>
           </div>
