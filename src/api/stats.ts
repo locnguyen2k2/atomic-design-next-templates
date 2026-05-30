@@ -44,7 +44,7 @@ export type GrowthEntity = 'features' | 'projects' | 'organizations' | 'roles' |
 export const statsApi = {
   getGrowth: async (entity: GrowthEntity, orgId: string, period: GrowthPeriod): Promise<GrowthResponse> => {
     try {
-      return await apiClient.get<GrowthResponse>(`/${entity}/growth/${orgId}`, { period });
+      return await apiClient.get<GrowthResponse>(`/${entity}/growth${entity === 'organizations' ? '' : `/${orgId}`}`, { period });
     } catch (e: any) {
       return {
         success: false,

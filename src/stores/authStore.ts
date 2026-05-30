@@ -101,6 +101,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
                 refresh_token: tokens.refresh_token,
                 expires_in: tokens.expires_in,
               });
+              console.log({ tokens });
               const userRes = await authApi.verifyAccessToken(tokens.access_token);
               const user = (userRes as any).data || userRes;
               setUser(user);
