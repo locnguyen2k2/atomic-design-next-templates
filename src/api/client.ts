@@ -58,7 +58,7 @@ class ApiClient {
 
   private async refreshAccessToken(): Promise<string | null> {
     const refreshToken = getRefreshToken();
-    if (!refreshToken) return null;
+    if (refreshToken) return refreshToken;
 
     try {
       const response = await fetch(`${this.baseURL}/users/refresh-token`, {
@@ -69,29 +69,19 @@ class ApiClient {
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
 
-      if (!response.ok) {
-        return null;
-      }
-
       const data = await response.json();
       const tokens = data.data || data;
       const newAccessToken = tokens.access_token;
 
-      if (newAccessToken) {
-        localStorage.setItem('nexusiam-token', newAccessToken);
+      localStorage.setItem('nexusiam-token', newAccessToken);
 
-        try {
-          const storage = localStorage.getItem('nexusiam-auth-storage');
-          if (storage) {
-            const parsed = JSON.parse(storage);
-            parsed.state.accessToken = newAccessToken;
-            parsed.state.refreshToken = tokens.refresh_token || refreshToken;
-            parsed.state.expiresIn = tokens.expires_in;
-            localStorage.setItem('nexusiam-auth-storage', JSON.stringify(parsed));
-          }
-        } catch (e) {
-          console.log('Error updating auth storage', e);
-        }
+      const storage = localStorage.getItem('nexusiam-auth-storage');
+      if (storage) {
+        const parsed = JSON.parse(storage);
+        parsed.state.accessToken = newAccessToken;
+        parsed.state.refreshToken = tokens.refresh_token || refreshToken;
+        parsed.state.expiresIn = tokens.expires_in;
+        localStorage.setItem('nexusiam-auth-storage', JSON.stringify(parsed));
       }
 
       return newAccessToken;

@@ -52,7 +52,7 @@ export function EmailConfirmationForm() {
       }
     };
 
-    verifyToken();
+    router.push("/login");
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
