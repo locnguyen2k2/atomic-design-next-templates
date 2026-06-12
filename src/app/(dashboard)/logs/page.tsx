@@ -43,7 +43,7 @@ export default function LogsPage() {
       label: "User",
       render: (row: SystemLog) => (
         <div className="flex flex-col">
-          <span className="text-sm text-text-primary">{row.created_by || "System"}</span>
+          <span className="text-sm text-text-primary">{row.created_by ? `${row.attributes ? row.attributes.find(({key}) => key === 'email')?.value : ''}` : "System"}</span>
           <span className="text-[10px] text-text-muted font-mono">{row.ip_address}</span>
         </div>
       ),

@@ -67,7 +67,7 @@ export interface SystemLog {
   created_by?: string;
   ip_address?: string;
   user_agent?: string;
-  metadata?: Record<string, any>;
+  attributes?: { key: string, value: string }[];
   created_at: string;
 }
 
@@ -88,6 +88,7 @@ export interface ListParams {
   limit?: number;
   take?: number;
   search?: string;
+  all?: boolean;
   sort?: string;
   order?: 'asc' | 'desc';
   organization_id?: string;

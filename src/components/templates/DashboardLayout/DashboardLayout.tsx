@@ -5,8 +5,8 @@ import { Header } from "@/components/organisms/Header";
 import { useAppStore, useAuthStore } from "@/stores";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { useMe } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
+import { useOrganizations } from "@/hooks";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,6 +14,7 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) {
+  const { data: orgs  } = useOrganizations({all: true});
   const { theme, toggleTheme, sidebarCollapsed, toggleSidebar, currentOrg, setCurrentOrg } = useAppStore();
   const { setUser, user: baseInfo, isLoading } = useAuthStore();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -22,26 +23,22 @@ export function DashboardLayout({ children, breadcrumb }: DashboardLayoutProps) 
   // const { data: userData, isLoading } = useMe();
 
   const organizations = useMemo(() => {
-    if (baseInfo?.organizations) {
-      return baseInfo.organizations.map((orgRole) => ({
-        id: orgRole?.organization_id || orgRole.id,
+     if (orgs && orgs?.data.length > 0) {
+      return orgs.data.map((orgRole) => ({
+        id: orgRole.id,
         name: orgRole.name,
       }));
     }
     return [];
-  }, [baseInfo]);
+  }, [orgs]);
 
   const currentOrgData = useMemo(() => {
-    if (baseInfo?.status === "ACTIVE") {
-      if (organizations.length === 0) return { id: "", name: "No Organization" };
-
+    if (orgs && orgs?.data.length > 0) {
       const found = organizations.find((o) => o.id === currentOrg);
       if (found) return found;
-
-      return organizations[0];
     }
     return { id: "", name: "No Organization" };
-  }, [baseInfo?.status, organizations, currentOrg]);
+  }, [currentOrg, organizations, orgs]);
 
   useEffect(() => {
     if (baseInfo?.status === "INACTIVE") {
