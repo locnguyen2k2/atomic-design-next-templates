@@ -90,63 +90,36 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       checkAuth: async () => {
         const { accessToken, refreshToken, logout, setTokens, setUser, setLoading } = get();
 
-        if (!accessToken) {
-          if (refreshToken) {
-            try {
-              setLoading(true);
-              const res = await authApi.refreshToken(refreshToken);
-              const tokens = (res as any).data || res;
-              setTokens({
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                expires_in: tokens.expires_in,
-              });
-              console.log({ tokens });
-              const userRes = await authApi.verifyAccessToken(tokens.access_token);
-              const user = (userRes as any).data || userRes;
-              setUser(user);
-              set({ isAuthenticated: true });
-            } catch (error) {
-              await logout();
-            } finally {
-              setLoading(false);
-            }
-          } else {
-            set({ isAuthenticated: false });
-          }
-          return;
-        }
+        if (!accessToken && !refreshToken) { setLoading(false); return };
+        setLoading(true);
 
-        try {
-          setLoading(true);
-          const userRes = await authApi.verifyAccessToken(accessToken);
-          const user = (userRes as any).data || userRes;
-          setUser(user);
-          set({ isAuthenticated: true });
-        } catch (error) {
-          // Access token might be expired, try refresh token
-          if (refreshToken) {
-            try {
-              const res = await authApi.refreshToken(refreshToken);
-              const tokens = (res as any).data || res;
-              setTokens({
-                access_token: tokens.access_token,
-                refresh_token: tokens.refresh_token,
-                expires_in: tokens.expires_in,
-              });
-              const userResAfterRefresh = await authApi.verifyAccessToken(tokens.access_token);
-              const userAfterRefresh = (userResAfterRefresh as any).data || userResAfterRefresh;
-              setUser(userAfterRefresh);
-              set({ isAuthenticated: true });
-            } catch (refreshError) {
-              await logout();
-            }
-          } else {
+        if (accessToken)
+          try {
+            const userRes = await authApi.verifyAccessToken(accessToken);
+            const user = (userRes as any).data || userRes;
+            setUser(user);
+            set({ isAuthenticated: true });
+            setLoading(false);
+            return;
+          } catch (error) {
+            console.log("User's access token is expired")
+          }
+        if (refreshToken)
+          try {
+            const res = await authApi.refreshToken(refreshToken);
+            const tokens = (res as any).data || res;
+            setTokens({
+              access_token: tokens.access_token,
+              refresh_token: tokens.refresh_token,
+              expires_in: tokens.expires_in,
+            });
+            setLoading(false);
+            return;
+          } catch (error) {
             await logout();
           }
-        } finally {
-          setLoading(false);
-        }
+        setLoading(false);
+        return;
       },
     }),
     {

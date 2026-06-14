@@ -3,13 +3,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
-import { useAppStore } from "@/stores";
 
 const publicPaths = ["/login", "/register"];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, checkAuth, isLoading, user } = useAuthStore();
-  const { currentOrg, setCurrentOrg } = useAppStore();
   const pathname = usePathname();
   const router = useRouter();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -35,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (isAuthenticated && isPublicPath && user && user.status !== "ACTIVE") {
       router.push("/email-confirmation");
     }
-  }, [isAuthenticated, isInitialized, pathname, router]);
+  }, [isAuthenticated, isInitialized, pathname, router, user]);
 
   if (!isInitialized || (isLoading && !isAuthenticated)) {
     return (
