@@ -15,11 +15,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const performCheck = useCallback(async () => {
     await checkAuth();
     setIsInitialized(true);
-  }, [checkAuth]);
+  }, []);
 
   useEffect(() => {
     performCheck();
-  }, [performCheck]);
+  }, []);
 
   useEffect(() => {
     if (!isInitialized) return;
