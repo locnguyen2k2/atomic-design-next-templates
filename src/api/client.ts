@@ -87,6 +87,7 @@ class ApiClient {
       return newAccessToken;
     } catch (error) {
       console.log('Token refresh error:', error);
+      localStorage.clear();
       return null;
     }
   }
