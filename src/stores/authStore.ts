@@ -88,38 +88,49 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       setError: (error) => set({ error }),
 
       checkAuth: async () => {
-        const { accessToken, refreshToken, logout, setTokens, setUser, setLoading } = get();
+        let user: User | null = null;
+        let tokens: any | null = null;
+        let isRefresh = false;
+
+        const { accessToken, refreshToken, setTokens, setUser, setLoading } = get();
 
         if (!accessToken && !refreshToken) { setLoading(false); return };
         setLoading(true);
 
-        if (accessToken)
+        if (accessToken) {
           try {
             const userRes = await authApi.verifyAccessToken(accessToken);
-            const user = (userRes as any).data || userRes;
-            setUser(user);
-            set({ isAuthenticated: true });
-            setLoading(false);
-            return;
+            user = (userRes as any).data || userRes;
           } catch (error) {
             console.log("User's access token is expired")
+            isRefresh = true;
           }
-        if (refreshToken)
+        }
+        if (refreshToken && isRefresh) {
           try {
             const res = await authApi.refreshToken(refreshToken);
-            const tokens = (res as any).data || res;
-            setTokens({
-              access_token: tokens.access_token,
-              refresh_token: tokens.refresh_token,
-              expires_in: tokens.expires_in,
-            });
-            setLoading(false);
-            return;
+            tokens = (res as any).data || res;
           } catch (error) {
-            await logout();
+            console.log('Refresh is expired')
           }
-        else await logout();
+        }
+        if (tokens) {
+          setTokens({
+            access_token: tokens.access_token,
+            refresh_token: tokens.refresh_token,
+            expires_in: tokens.expires_in,
+          });
+          setLoading(false);
+          set({ isAuthenticated: true });
+          return;
+        } else if (user) {
+          setLoading(false);
+          set({ isAuthenticated: false });
+          setUser(user);
+          return
+        }
         setLoading(false);
+        set({ isAuthenticated: false });
         return;
       },
     }),
