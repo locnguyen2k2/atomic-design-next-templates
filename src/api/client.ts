@@ -157,13 +157,12 @@ class ApiClient {
               if (typeof window !== 'undefined') {
                 window.location.href = '/login';
               }
-              throw new Error('Token refresh failed');
             }
           } catch (refreshError) {
+            localStorage.clear()
             if (typeof window !== 'undefined') {
               window.location.href = '/login';
             }
-            throw refreshError;
           } finally {
             this.isRefreshing = false;
           }
