@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { Icon } from '@/components/atoms/Icon';
-import { Badge } from '@/components/atoms/Badge';
 import { cn } from '@/lib/utils';
 import type { IconName } from '@/types/icon';
 

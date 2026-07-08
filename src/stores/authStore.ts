@@ -118,6 +118,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           } catch (error) {
             await logout();
           }
+        else await logout();
         setLoading(false);
         return;
       },

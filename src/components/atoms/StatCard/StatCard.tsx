@@ -19,7 +19,7 @@ export const StatCard = ({ icon, label, value, color, percentage, trend, trendDi
           <Icon name={icon as any} size="sm" />
         </div>
         {trend && (
-          <span className={cn("stat-card-trend flex items-center gap-1 text-xs font-semibold", trendDirection === "up" ? "text-success" : "text-danger")}>
+          <span className={cn("stat-card-trend flex items-center gap-1 text-xsf ont-semibold", trendDirection === "up" ? "text-success" : "text-danger")}>
             <Icon name={trendDirection === "up" ? "trend-up" : "trend-up"} size="sm" className={trendDirection === "down" ? "rotate-180" : ""} />
             {trend}
           </span>

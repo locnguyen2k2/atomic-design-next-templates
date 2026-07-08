@@ -26,6 +26,7 @@ export function GrowthChart({ data, min, max, type, title, className }: GrowthCh
     return () => clearTimeout(timer);
   }, [data, type]);
 
+
   const chartData = useMemo(() => {
     if (!data || !data.labels || !data.values) return [];
 
