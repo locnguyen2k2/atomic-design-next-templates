@@ -48,11 +48,11 @@ export function EmailConfirmationForm() {
         await authApi.verifyAccessToken(accessToken);
       } catch (error) {
         console.error("Invalid access token:", error);
-        router.push("/login");
+        // router.push("/login");
       }
     };
 
-    router.push("/login");
+    // router.push("/login");
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
