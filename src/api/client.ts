@@ -1,3 +1,5 @@
+import { useAppStore, useAuthStore } from "@/stores";
+
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3004/apis/v1';
 
 function getAuthToken(): string | null {
@@ -155,11 +157,12 @@ class ApiClient {
               return {} as T;
             } else {
               if (typeof window !== 'undefined') {
+                localStorage.removeItem('nexusiam-token');
                 window.location.href = '/login';
               }
             }
           } catch (refreshError) {
-            localStorage.clear()
+            localStorage.removeItem('nexusiam-token');
             if (typeof window !== 'undefined') {
               window.location.href = '/login';
             }

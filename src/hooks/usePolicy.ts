@@ -132,6 +132,16 @@ export function usePolicy() {
     }
   }, [fetchPolicies, fetchAttributes, activeTab]);
 
+  useEffect(() => {
+    if (user && user.id) {
+      setEvalForm(prev => ({
+        ...prev,
+        resource_org: currentOrg,
+        resource_owner: user.id,
+      }))
+    }
+  }, [user, currentOrg])
+
   const openDrawer = (policy?: AbacPolicy) => {
     setSelectedPolicy(policy || null);
     setIsDrawerOpen(true);

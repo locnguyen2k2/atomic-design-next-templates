@@ -43,11 +43,10 @@ export const authApi = {
     );
   },
 
-  refreshToken: async (refreshToken: string): Promise<Omit<AuthResponse['data']['token'], 'token_type'>> => {
+  refreshToken: async (refreshToken: string): Promise<AuthResponse> => {
     return await apiClient.post('/users/refresh-token',
       { refresh_token: refreshToken },
-      {
-      }
+      {}
     );
   },
 

@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         let tokens: any | null = null;
         let isRefresh = false;
 
-        const { accessToken, refreshToken, setTokens, setUser, setLoading } = get();
+        const { accessToken, refreshToken, setTokens, setUser, setLoading, clearAuth } = get();
 
         if (!accessToken && !refreshToken) { setLoading(false); return };
         setLoading(true);
@@ -101,6 +101,22 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           try {
             const userRes = await authApi.verifyAccessToken(accessToken);
             user = (userRes as any).data || userRes;
+            setLoading(false);
+            set({
+              isAuthenticated: true,
+              user: {
+                id: user?.id as string,
+                username: user?.username as string,
+                email: user?.email as string,
+                first_name: user?.first_name as string,
+                last_name: user?.last_name as string,
+                status: user?.status as any,
+                created_at: user?.created_at as string,
+                updated_at: user?.updated_at as string,
+                organizations: user?.organizations as any,
+              }
+            });
+            return;
           } catch (error) {
             console.log("User's access token is expired")
             isRefresh = true;
@@ -109,7 +125,16 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         if (refreshToken && isRefresh) {
           try {
             const res = await authApi.refreshToken(refreshToken);
-            tokens = (res as any).data || res;
+            tokens = res.data.token;
+            setLoading(false);
+            setUser(res.data.user);
+            setTokens({
+              access_token: tokens.access_token,
+              refresh_token: tokens.refresh_token,
+              expires_in: tokens.expires_in,
+            });
+            set({ isAuthenticated: true });
+            return;
           } catch (error) {
             console.log('Refresh is expired')
           }
@@ -123,14 +148,9 @@ export const useAuthStore = create<AuthState & AuthActions>()(
           setLoading(false);
           set({ isAuthenticated: true });
           return;
-        } else if (user) {
-          setLoading(false);
-          set({ isAuthenticated: false });
-          setUser(user);
-          return
         }
+        clearAuth();
         setLoading(false);
-        set({ isAuthenticated: false });
         return;
       },
     }),
