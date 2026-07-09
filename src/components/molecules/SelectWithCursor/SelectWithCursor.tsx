@@ -20,9 +20,10 @@ interface SelectWithCursorProps {
   onSelect: (item: SelectItem) => void;
   selectedId?: string;
   className?: string;
+  disabled?: boolean;
 }
 
-export function SelectWithCursor({ label, placeholder = "Select an item...", items, isLoading, hasMore, onLoadMore, onSearch, onSelect, selectedId, className }: SelectWithCursorProps) {
+export function SelectWithCursor({ label, placeholder = "Select an item...", items, isLoading, hasMore, onLoadMore, onSearch, onSelect, selectedId, className, disabled = false }: SelectWithCursorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +116,7 @@ export function SelectWithCursor({ label, placeholder = "Select an item...", ite
                     key={item.id}
                     ref={index === items.length - 1 ? (node) => lastElementRef(node) : null}
                     onClick={() => handleSelect(item)}
+                    disabled={disabled}
                     className={cn("flex items-center w-full px-4 py-2.5 text-sm transition-colors duration-200", "hover:bg-bg-elevated", selectedId === item.id ? "bg-primary-dim text-primary" : "text-text-primary")}
                   >
                     <span className="flex-1 text-left truncate">{item.name}</span>

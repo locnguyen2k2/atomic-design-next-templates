@@ -21,6 +21,20 @@ function getOrganizationId(): string | null {
   return null;
 }
 
+function getStaffId(orgId: String): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const storage = localStorage.getItem('nexusiam-auth-storage');
+    if (storage) {
+      const parsed = JSON.parse(storage);
+      return parsed.state.user.organizations.find((org: any) => org.id === orgId)?.staff_id || null;
+    }
+  } catch (e) {
+    console.log('Error parsing nexusiam-storage', e);
+  }
+  return null;
+}
+
 function getProjectId(): string | null {
   if (typeof window === 'undefined') return null;
   try {
@@ -114,6 +128,9 @@ class ApiClient {
 
     if (orgId) {
       headers['organization-id'] = orgId;
+      const staffId = getStaffId(orgId);
+      if (staffId)
+        headers['staff-id'] = staffId;
     }
 
     if (projectId) {

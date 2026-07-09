@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { ListPageTemplate } from "@/components/templates/ListPageTemplate";
-import { ProjectForm } from "@/components/molecules/ProjectForm";
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from "@/hooks/useProjects";
+import { useStaffs, useCreate, useUpdate, useDelete } from "@/hooks/useStaffs";
 import { useOrganizationsCursor } from "@/hooks/useOrganizations";
 import { formatDate } from "@/lib/dateUtils";
 import { useAppStore } from "@/stores";
 import { SelectWithCursor } from "@/components/molecules/SelectWithCursor";
+import { StaffForm } from "@/components/molecules/StaffForm";
 
-export default function ProjectsPage() {
+export default function useStaffsPage() {
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>(() => {
     const now = new Date();
     const oneMonthAgo = new Date(now);
@@ -22,7 +22,7 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [organizationSearch, setOrganizationSearch] = useState("");
 
-  const { addToast, currentOrg, setCurrentProject } = useAppStore();
+  const { addToast, currentOrg, setCurrentOrg } = useAppStore();
 
   const getApiParams = () => {
     const params: any = {};
@@ -45,10 +45,10 @@ export default function ProjectsPage() {
     return params;
   };
 
-  const { data: projects, isLoading } = useProjects(getApiParams());
-  const createMutation = useCreateProject();
-  const updateMutation = useUpdateProject();
-  const deleteMutation = useDeleteProject();
+  const { data: staffs, isLoading } = useStaffs(getApiParams());
+  const createMutation = useCreate();
+  const updateMutation = useUpdate();
+  const deleteMutation = useDelete();
 
   const { data: organizationPages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading: isOrganizationsLoading } = useOrganizationsCursor({ keyword: organizationSearch });
 
@@ -94,11 +94,11 @@ export default function ProjectsPage() {
   return (
     <div className="animate-fade-in">
       <ListPageTemplate
-        title="Projects"
-        subtitle="Manage projects scoped to your organizations. Projects group features and resources."
-        icon="folder-open"
+        title="Staffs"
+        subtitle="Manage staffs scoped to your organizations. staffs group features and resources."
+        icon="user-tag"
         color="accent"
-        data={projects?.data || []}
+        data={staffs?.data || []}
         isLoading={isLoading}
         keyField="id"
         enableDateRangeFilter={true}
@@ -107,7 +107,7 @@ export default function ProjectsPage() {
         onDateRangeChange={handleDateRangeChange}
         dateRangeFilterValue={dateRange}
         onSearch={handleSearch}
-        renderForm={(props) => <ProjectForm {...props} />}
+        renderForm={(props) => <StaffForm {...props} />}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
@@ -121,20 +121,30 @@ export default function ProjectsPage() {
               hasMore={!!hasNextPage}
               onLoadMore={() => fetchNextPage()}
               onSearch={(query) => setOrganizationSearch(query)}
-              onSelect={(item) => setCurrentProject(item.id)}
+              onSelect={(item) => setCurrentOrg(item.id)}
               selectedId={currentOrg}
             />
           </div>
         }
         columns={[
           {
-            key: "name",
-            label: "Name / Slug",
+            key: "first_name",
+            label: "First name",
             sortable: true,
             render: (row: any) => (
               <div className="table-cell-meta">
-                <span className="table-cell-name font-medium text-text-primary">{row.name}</span>
-                <span className="table-cell-slug text-text-muted text-xs block">/{row.slug}</span>
+                <span className="table-cell-name font-medium text-text-primary">{row.user && row.user.first_name}</span>
+                <span className="table-cell-slug text-text-muted text-xs block">/{row.user && row.user.last_name}</span>
+              </div>
+            ),
+          },
+          {
+            key: "last_name",
+            label: "Last name",
+            sortable: true,
+            render: (row: any) => (
+              <div className="table-cell-meta">
+                <span className="table-cell-slug text-text-muted text-xs block">/{row.user && row.user.last_name}</span>
               </div>
             ),
           },
@@ -142,15 +152,20 @@ export default function ProjectsPage() {
             key: "organization_id",
             label: "Organization",
             render: (row: any) => {
-              const org = organizations.find((o: any) => o.id === row.organization_id);
-              return <span className="badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-dim text-primary">{org?.name || "Unknown Org"}</span>;
+              return <span className="badge inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-dim text-primary">{row?.organization_id || "Unknown Org"}</span>;
             },
           },
           {
-            key: "description",
-            label: "Description",
+            key: "role",
+            label: "Role",
             type: "desc",
-            render: (row: any) => <span className="text-text-secondary text-xs truncate max-w-[260px] block">{row.description || "—"}</span>,
+            render: (row: any) => <span className="text-text-secondary text-xs truncate max-w-[260px] block">{row?.context_attributes?.role || "—"}</span>,
+          },
+          {
+            key: "department",
+            label: "Department",
+            type: "desc",
+            render: (row: any) => <span className="text-text-secondary text-xs truncate max-w-[260px] block">{row?.department || "—"}</span>,
           },
           {
             key: "created_at",
@@ -162,8 +177,8 @@ export default function ProjectsPage() {
         ]}
         emptyState={{
           icon: "folder-open",
-          title: "No Projects Found",
-          message: currentOrg ? "No projects in this organization. Create one to get started." : "No projects yet. Create your first one!",
+          title: "No staffs Found",
+          message: currentOrg ? "No staffs in this organization. Create one to get started." : "No staffs yet. Create your first one!",
         }}
       />
     </div>

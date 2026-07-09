@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: "grid-2", href: "/dashboard", section: "main" },
   { id: "organizations", label: "Organizations", icon: "building", href: "/organizations", section: "iam" },
   { id: "projects", label: "Projects", icon: "folder-open", href: "/projects", section: "iam" },
+  { id: "staffs", label: "Staffs", icon: "user-tag", href: "/staffs", section: "iam" },
   { id: "features", label: "Features", icon: "flag", href: "/features", section: "iam" },
   { id: "roles", label: "Roles", icon: "shield", href: "/roles", section: "iam" },
   { id: "permissions", label: "Policy", icon: "key", href: "/policy", section: "iam" },

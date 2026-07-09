@@ -26,7 +26,9 @@ export class BaseCursorOptionDto {
   has_next!: boolean;
 }
 
-export interface Organization extends BaseEntity { }
+export interface Organization extends BaseEntity {
+  staff_id?: string
+}
 
 export interface Project extends BaseEntity {
   organization_id: string;
@@ -135,4 +137,18 @@ export interface RegisterRequest extends CaptchaData {
 
 export interface EmailConfirmationRequest extends CaptchaData {
   code: string;
+}
+
+export interface Staff {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  department_id: string;
+  context_attributes: Record<string, any>;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+  created_by: String;
+  updated_by: String;
+  user?: User
 }
