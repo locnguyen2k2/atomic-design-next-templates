@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock, faArrowRight, faShieldAlt, faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import type { CaptchaData } from "@/types";
 
-export function LoginForm() {
+export function LoginForm({ effectedForm }: any) {
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -66,7 +66,7 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className={`login ${effectedForm === 1}`} onSubmit={handleSubmit}>
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
 
@@ -119,13 +119,6 @@ export function LoginForm() {
         <Button type="submit" variant="primary" size="lg" className="w-full shadow-lg shadow-primary/20" loading={isLoading} rightIcon={!isLoading && <FontAwesomeIcon icon={faArrowRight} className="w-4 h-4 ml-2" />}>
           Sign In
         </Button>
-
-        <div className="text-center text-sm text-text-secondary">
-          Don&apos;t have an account?{" "}
-          <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/register")}>
-            Create account
-          </button>
-        </div>
       </LiquidGlass>
     </form>
   );

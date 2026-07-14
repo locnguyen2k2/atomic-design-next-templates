@@ -1,0 +1,58 @@
+.auth-template {
+
+    .icon {
+        position: absolute;
+        transition: ease-in-out 675ms;
+        transition-property: transform color;
+    }
+
+    .icon.top {
+        bottom: 100%,
+    }
+
+    .icon.bottom {
+        top: 100%;
+    }
+
+    .icon.left {
+        right: 100%;
+    }
+
+    .icon.right {
+        left: 100%;
+    }
+
+    .icon.false {
+        color: rgb(53, 64, 126);
+    }
+
+    .container {
+        width: 711px;
+        height: 711px;
+        position: relative;
+        overflow: hidden;
+
+        form {
+            top: 0;
+            opacity: 1;
+            z-index: 2;
+            width: 100%;
+            position: absolute;
+            transition: ease-in-out 675ms;
+            transform: translateX(0);
+            transition-property: transform opacity;
+        }
+
+        form.true {
+            transform: translateX(0);
+        }
+
+        form.false,
+        form.false,
+        form.false {
+            z-index: 1;
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+    }
+}

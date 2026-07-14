@@ -177,10 +177,6 @@ body {
   transition: all 0.2s;
 }
 
-.policy-attributes .select-panel {
-  position: relative;
-}
-
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
@@ -785,34 +781,6 @@ body {
 .page-header-actions {
   display: flex;
   gap: 0.5rem;
-}
-
-/* Card styles */
-.card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.card-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.card-subtitle {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  margin-top: 0.125rem;
-}
-
-.card-body {
-  padding: 1.5rem;
 }
 
 /* Quick actions grid */

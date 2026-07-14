@@ -1,0 +1,9 @@
+.select-panel {
+    top: 100%;
+    z-index: 9999;
+    position: absolute;
+}
+
+.card:has(.select-panel) {
+    z-index: 2;
+}

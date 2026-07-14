@@ -1,6 +1,6 @@
 import apiClient from './client';
 import { AbacPolicy } from '@/types/abac';
-import { PaginatedResponse, ListParams, BasePageOptionDto, BaseCursorOptionDto, CursorResponse } from '@/types';
+import { PaginatedResponse, ListParams, BasePageOptionDto, BaseCursorOptionDto, CursorResponse, SystemLog } from '@/types';
 
 export const policiesApi = {
   list: async (orgId: string, params: ListParams = {}): Promise<PaginatedResponse<AbacPolicy>> => {
@@ -13,6 +13,21 @@ export const policiesApi = {
       data = response?.data;
     } catch (e: any) {
       console.log(e);
+    }
+    return data;
+  },
+
+  logs: async (params: ListParams = {}): Promise<PaginatedResponse<SystemLog>> => {
+    let data: PaginatedResponse<SystemLog> = {
+      data: [],
+      paginated: new BasePageOptionDto()
+    }
+    try {
+      params.keyword = "/evaluate"
+      const response = await apiClient.get<{ data: PaginatedResponse<SystemLog> }>('/system/logs', params);
+      data = response?.data;
+    } catch (e: any) {
+      console.log('Failed to fetch system logs:', e);
     }
     return data;
   },

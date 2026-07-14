@@ -8,15 +8,16 @@ import { Badge } from "@/components/atoms/Badge";
 import { StatCard } from "@/components/atoms/StatCard";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { SystemLog } from "@/types";
 
 interface EvaluationLogProps {
-  logs: any[];
+  logs: SystemLog[];
 }
 
 export function EvaluationLog({ logs }: EvaluationLogProps) {
-  const allowCount = logs.filter((l) => l.result === "ALLOW").length;
-  const denyCount = logs.filter((l) => l.result === "DENY").length;
-  const avgLatency = logs.length > 0 ? Math.round(logs.reduce((acc, curr) => acc + curr.duration_ms, 0) / logs.length) : 0;
+  const allowCount = logs.filter((l) => l.after?.response?.decision === "ALLOW").length;
+  const denyCount = logs.filter((l) => l.after?.response?.decision === "DENY").length;
+  const avgLatency = logs.length > 0 ? Math.round(logs.reduce((acc, curr) => acc + curr.duration, 0) / logs.length) : 0;
 
   return (
     <div className="space-y-6">
@@ -39,7 +40,7 @@ export function EvaluationLog({ logs }: EvaluationLogProps) {
               <p className="text-[11px] text-text-muted">Real-time access decision audit trail</p>
             </div>
           </div>
-          <Button variant="secondary" size="sm" className="h-8 text-xs gap-1.5" onClick={() => {}}>
+          <Button variant="secondary" size="sm" className="h-8 text-xs gap-1.5" onClick={() => { }}>
             <Icon name="download" size="md" /> Export
           </Button>
         </div>
@@ -67,26 +68,26 @@ export function EvaluationLog({ logs }: EvaluationLogProps) {
               ) : (
                 logs.map((log) => (
                   <tr key={log.id} className="hover:bg-bg-hover/30 transition-colors">
-                    <td className="px-5 py-3.5 whitespace-nowrap text-[11px] font-mono text-text-muted">{format(new Date(log.ts), "HH:mm:ss.SSS")}</td>
+                    <td className="px-5 py-3.5 whitespace-nowrap text-[11px] font-mono text-text-muted">{format(new Date(log.created_at), "HH:mm:ss.SSS")}</td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-xs font-bold text-text-primary">{log.subject}</span>
+                      <span className="text-xs font-bold text-text-primary">{log.after?.response?.context?.subject?.email}</span>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
                       <Badge variant="muted" className="text-[10px] font-mono">
                         {log.action}
                       </Badge>
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-[11px] font-mono text-text-secondary">{log.resource}</td>
+                    <td className="px-5 py-3.5 whitespace-nowrap text-[11px] font-mono text-text-secondary">{log.after?.response?.context?.resource?.name}</td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${log.result === "ALLOW" ? "text-success" : "text-danger"}`}>
-                        <Icon name={log.result === "ALLOW" ? "circle-check" : "circle-xmark"} size="md" />
-                        {log.result}
+                      <div className={`flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest ${log.after?.response?.context?.decision === "ALLOW" ? "text-success" : "text-danger"}`}>
+                        <Icon name={log.after?.response?.context?.decision === "ALLOW" ? "circle-check" : "circle-xmark"} size="md" />
+                        {log.after?.response?.context?.decision}
                       </div>
                     </td>
                     <td className="px-5 py-3.5 whitespace-nowrap">
-                      <span className="text-[10px] bg-bg-subtle px-2 py-1 rounded text-text-muted border border-border/50">{log.policy}</span>
+                      {/* <span className="text-[10px] bg-bg-subtle px-2 py-1 rounded text-text-muted border border-border/50">{log.policy}</span> */}
                     </td>
-                    <td className="px-5 py-3.5 whitespace-nowrap text-right text-[11px] font-mono text-text-muted">{log.duration_ms}ms</td>
+                    <td className="px-5 py-3.5 whitespace-nowrap text-right text-[11px] font-mono text-text-muted">{log.duration}ms</td>
                   </tr>
                 ))
               )}

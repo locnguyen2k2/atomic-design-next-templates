@@ -65,7 +65,9 @@ export interface SystemLog {
   action: string;
   entity: string;
   entity_id?: string;
+  after: any;
   user_id: string;
+  duration: number;
   created_by?: string;
   ip_address?: string;
   user_agent?: string;

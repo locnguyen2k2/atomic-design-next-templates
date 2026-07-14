@@ -100,6 +100,23 @@ export function usePolicy() {
     }
   }, [currentOrg, page, policySearch, sort, dateRange, policyFilter, addToast]);
 
+  const fetchLogs = useCallback(async () => {
+    try {
+      const response = await policiesApi.logs({
+        page,
+        take: 10,
+        keyword: policySearch,
+        sorted: sort.order,
+        from_date: dateRange.from?.toISOString().split('T')[0],
+        to_date: dateRange.to?.toISOString().split('T')[0],
+      });
+
+      let data = response.data;
+
+      setEvalLog(data);
+    } catch (e: any) { }
+  }, [currentOrg])
+
   const fetchAttributes = useCallback(async () => {
     if (!currentOrg) return;
 
@@ -129,6 +146,8 @@ export function usePolicy() {
       fetchPolicies();
     } else if (activeTab === 'attributes') {
       fetchAttributes();
+    } else if (activeTab === 'logs') {
+      fetchLogs();
     }
   }, [fetchPolicies, fetchAttributes, activeTab]);
 

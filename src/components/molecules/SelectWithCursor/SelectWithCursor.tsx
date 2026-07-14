@@ -91,7 +91,7 @@ export function SelectWithCursor({ label, placeholder = "Select an item...", ite
       </button>
 
       {isOpen && (
-        <div className="absolute select-panel z-50 w-full mt-2 bg-bg-surface border border-border rounded-lg shadow-2xl animate-in fade-in zoom-in duration-200 overflow-hidden">
+        <div className="select-panel z-50 w-full mt-2 bg-bg-surface border border-border rounded-lg shadow-2xl animate-in fade-in zoom-in duration-200">
           <div className="p-2 border-b border-border bg-bg-elevated/50">
             <div className="relative">
               <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-text-muted" />
@@ -106,7 +106,7 @@ export function SelectWithCursor({ label, placeholder = "Select an item...", ite
             </div>
           </div>
 
-          <div ref={listRef} className="max-h-[240px] overflow-y-auto overflow-x-hidden custom-scrollbar py-1">
+          <div ref={listRef} className="max-h-[240px] custom-scrollbar py-1">
             {items.length === 0 && !isLoading ? (
               <div className="px-4 py-8 text-center text-sm text-text-muted">No items found</div>
             ) : (
