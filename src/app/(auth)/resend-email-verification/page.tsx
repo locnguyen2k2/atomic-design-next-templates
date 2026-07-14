@@ -1,5 +1,4 @@
 import { AuthTemplate } from "@/components/templates";
-import { ResendEmailConfirmationForm } from "@/components/organisms";
 
 export const metadata = {
   title: "Resend Email Verification | NexusIAM",
@@ -8,8 +7,6 @@ export const metadata = {
 
 export default function ResendEmailVerificationPage() {
   return (
-    <AuthTemplate title="Resend Email Verification" subtitle="Resend the verification email to your email address">
-      <ResendEmailConfirmationForm />
-    </AuthTemplate>
+    <AuthTemplate title="Resend Email Verification" subtitle="Resend the verification email to your email address" />
   );
 }

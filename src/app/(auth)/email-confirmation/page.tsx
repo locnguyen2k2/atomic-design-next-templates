@@ -1,5 +1,4 @@
 import { AuthTemplate } from '@/components/templates';
-import { EmailConfirmationForm } from '@/components/organisms';
 
 export const metadata = {
   title: 'Email Confirmation | NexusIAM',
@@ -8,11 +7,9 @@ export const metadata = {
 
 export default function EmailConfirmationPage() {
   return (
-    <AuthTemplate 
-      title="Confirm Your Email" 
+    <AuthTemplate
+      title="Confirm Your Email"
       subtitle="Enter the confirmation code sent to your email address"
-    >
-      <EmailConfirmationForm />
-    </AuthTemplate>
+    />
   );
 }

@@ -1,5 +1,4 @@
 import { AuthTemplate } from '@/components/templates';
-import { RegisterForm } from '@/components/organisms';
 
 export const metadata = {
   title: 'Register | NexusIAM',
@@ -11,8 +10,6 @@ export default function RegisterPage() {
     <AuthTemplate 
       title="Create Account" 
       subtitle="Join NexusIAM and start managing your resources"
-    >
-      <RegisterForm />
-    </AuthTemplate>
+    />
   );
 }
