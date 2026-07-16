@@ -38,7 +38,7 @@ export function AuthTemplate({ title, subtitle }: AuthTemplateProps) {
           {subtitle && <p className="text-text-secondary mt-2">{subtitle}</p>}
         </div>
 
-        <div className={cn("bg-bg-elevated rounded-3xl shadow-2xl", "backdrop-blur-sm bg-bg-elevated/80")} style={{
+        <div className={cn("")} style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center"
@@ -76,6 +76,8 @@ export function AuthTemplate({ title, subtitle }: AuthTemplateProps) {
             </svg>
           </div>
           <div className="container">
+            <div className="light-effect"></div>
+            <div className="light-text-effect">Login</div>
             <LoginForm effectedForm={effectedForm} />
             <RegisterForm effectedForm={effectedForm} />
             <ResendEmailConfirmationForm effectedForm={effectedForm} />
@@ -83,7 +85,7 @@ export function AuthTemplate({ title, subtitle }: AuthTemplateProps) {
         </div>
 
         <div className="text-center mt-8">
-          <p className="text-text-muted text-sm">&copy; {new Date().getFullYear()} NexusIAM. All rights reserved.</p>
+          <p className="text-text-muted text-sm">&copy; {new Date().getFullYear()} Cjool Admin Dashboard. All rights reserved.</p>
         </div>
       </div>
     </div>

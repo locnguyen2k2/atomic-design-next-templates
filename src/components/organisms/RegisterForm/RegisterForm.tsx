@@ -69,6 +69,7 @@ export function RegisterForm({ effectedForm }: any) {
   return (
     <form className={`register ${effectedForm === 2}`} onSubmit={handleSubmit}>
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
+        <h3 className="form-title text-lg font-semibold text-text-primary">Register</h3>
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
 
         <div className="grid grid-cols-2 gap-4">

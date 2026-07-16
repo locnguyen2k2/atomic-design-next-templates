@@ -63,10 +63,8 @@ export function Sidebar({ currentOrg, organizations, onOrgSwitch, collapsed, onT
         <div className="sidebar-header flex items-center gap-3 p-4 border-b border-border">
           {!collapsed && (
             <div className="logo flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-primary" />
               <div className="flex flex-col">
-                <span className="font-bold text-lg text-text-primary">NexusIAM</span>
-                <span className="text-xs text-text-muted font-mono">v2.4.0</span>
+                <span className="font-bold text-lg text-text-primary">IAM</span>
               </div>
             </div>
           )}

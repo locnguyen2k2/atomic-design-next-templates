@@ -71,11 +71,7 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
         {success && <div className="p-4 bg-success/10 border border-success/20 rounded-xl text-success text-sm text-center">Verification email sent successfully! Redirecting...</div>}
-
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-text-primary">Resend Verification Email</h3>
-          <p className="text-sm text-text-secondary mt-1">Enter the captcha to resend the confirmation email</p>
-        </div>
+        <h3 className="form-title text-lg font-semibold text-text-primary">Resend Verification Email</h3>
 
         <div className="space-y-2">
           <div className="flex items-center gap-4">

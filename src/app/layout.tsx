@@ -11,7 +11,7 @@ config.autoAddCss = false
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'NexusIAM Dashboard',
+  title: 'Cjool Admin Dashboard',
   description: 'Multi-tenant RBAC management interface',
 }
 

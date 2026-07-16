@@ -70,12 +70,6 @@ export function EmailConfirmationForm({ userEmail, onResend }: any) {
     <form onSubmit={handleSubmit}>
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
-
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-text-primary">Confirm Your Email</h3>
-          <p className="text-sm text-text-secondary mt-1">Enter the confirmation code sent to your email</p>
-        </div>
-
         <Input id="code" label="Confirmation Code" placeholder="Enter your code" type="text" required value={code} onChange={(e) => setCode(e.target.value)} leftIcon={<FontAwesomeIcon icon={faKey} className="w-4 h-4" />} autoComplete="one-time-code" />
         <Input id="email" label="Email" placeholder="Enter your email" type="text" required value={email} onChange={(e) => setEmail(e.target.value)} rightIcon={<button disabled={!captchaData || !captchaInput} type="button" className="text-primary font-semibold hover:underline" onClick={() => onResend({
           captcha_id: captchaData?.captcha_id,
