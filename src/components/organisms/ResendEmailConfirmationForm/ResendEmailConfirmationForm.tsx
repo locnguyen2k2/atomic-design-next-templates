@@ -7,11 +7,13 @@ import { authApi } from "@/api/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import type { CaptchaData } from "@/types";
+import { EmailConfirmationForm } from "../EmailConfirmationForm";
 
 export function ResendEmailConfirmationForm({ effectedForm }: any) {
   const router = useRouter();
 
   const [captchaInput, setCaptchaInput] = useState("");
+  const [email, setEmail] = useState("");
   const [captchaData, setCaptchaData] = useState<CaptchaData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshingCaptcha, setIsRefreshingCaptcha] = useState(false);
@@ -34,9 +36,12 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
     fetchCaptcha();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!captchaData) return;
+  const handleSubmit = async ({
+    captcha_id = captchaData?.captcha_id,
+    captcha = captchaInput,
+  }: { captcha_id?: string, captcha: string }, e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!captcha_id) return;
 
     setIsLoading(true);
     setError(null);
@@ -44,16 +49,14 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
 
     try {
       await authApi.resendEmailVerification({
-        captcha_id: captchaData.captcha_id,
-        captcha: captchaInput,
+        captcha_id,
+        captcha,
+        email
       });
       setSuccess(true);
-      setTimeout(() => {
-        router.push("/email-confirmation");
-      }, 2000);
     } catch (err: any) {
       console.error("Resend email verification error:", err);
-      setError(err.response?.data?.message || "Failed to resend verification email");
+      setError(err?.message || "Failed to resend verification email");
       fetchCaptcha();
       setCaptchaInput("");
     } finally {
@@ -61,8 +64,10 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
     }
   };
 
+  useEffect(() => { setSuccess(false) }, [effectedForm])
+
   return (
-    <form className={`resend-mail ${effectedForm === 3}`} onSubmit={handleSubmit}>
+    success ? <EmailConfirmationForm userEmail={email} onResend={handleSubmit} /> : <form className={`resend-mail ${effectedForm === 3}`} onSubmit={(e) => handleSubmit({ captcha: captchaInput, captcha_id: captchaData?.captcha_id }, e)}>
       <LiquidGlass blur={20} opacity={0.15} borderOpacity={0.3} shadowIntensity={0.15} className="p-6 rounded-2xl space-y-4">
         {error && <div className="p-4 bg-danger/10 border border-danger/20 rounded-xl text-danger text-sm text-center animate-shake">{error}</div>}
         {success && <div className="p-4 bg-success/10 border border-success/20 rounded-xl text-success text-sm text-center">Verification email sent successfully! Redirecting...</div>}
@@ -73,6 +78,13 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
         </div>
 
         <div className="space-y-2">
+          <div className="flex items-center gap-4">
+            <div className="w-full">
+              <Input id="email" label="Email" placeholder="Enter your email" type="text" required value={email} onChange={(e) => setEmail(e.target.value)}
+                rightIcon={<button type="button" className="text-primary font-semibold hover:underline" onClick={() => setSuccess(true)}>Verify Now</button>
+                } />
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <div className="flex-1 h-12 bg-surface-secondary rounded-lg overflow-hidden border border-border flex items-center justify-center relative group">
               {captchaData ? <img src={captchaData.captcha} alt="Captcha" className="h-full w-full object-contain" /> : <div className="w-full h-full animate-pulse bg-muted/20" />}
@@ -91,5 +103,6 @@ export function ResendEmailConfirmationForm({ effectedForm }: any) {
         </Button>
       </LiquidGlass>
     </form>
+
   );
 }

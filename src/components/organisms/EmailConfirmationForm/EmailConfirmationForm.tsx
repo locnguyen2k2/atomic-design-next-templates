@@ -9,8 +9,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faShieldAlt, faKey } from "@fortawesome/free-solid-svg-icons";
 import type { CaptchaData } from "@/types";
 
-export function EmailConfirmationForm() {
+export function EmailConfirmationForm({ userEmail, onResend }: any) {
   const router = useRouter();
+  const [email, setEmail] = useState<string>('');
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const [code, setCode] = useState("");
@@ -34,26 +35,8 @@ export function EmailConfirmationForm() {
 
   useEffect(() => {
     fetchCaptcha();
-  }, []);
-
-  useEffect(() => {
-    const verifyToken = async () => {
-      const accessToken = localStorage.getItem("nexusiam-token");
-      if (!accessToken) {
-        router.push("/login");
-        return;
-      }
-
-      try {
-        await authApi.verifyAccessToken(accessToken);
-      } catch (error) {
-        console.error("Invalid access token:", error);
-        // router.push("/login");
-      }
-    };
-
-    // router.push("/login");
-  }, [router]);
+    setEmail(userEmail);
+  }, [userEmail]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,16 +46,16 @@ export function EmailConfirmationForm() {
     setError(null);
 
     try {
-      const response = await authApi.confirmEmail({
+      await authApi.confirmEmail({
         captcha_id: captchaData.captcha_id,
         captcha: captchaInput,
         code,
+        email,
       });
-      setAuth(response.data.user, response.data.token);
       router.push("/login");
     } catch (err: any) {
       console.error("Email confirmation error:", err);
-      setError(err.response?.data?.message || "Invalid confirmation code or captcha");
+      setError(err.message || "Invalid confirmation code or captcha");
       // Refresh captcha on failure
       fetchCaptcha();
       setCaptchaInput("");
@@ -94,6 +77,12 @@ export function EmailConfirmationForm() {
         </div>
 
         <Input id="code" label="Confirmation Code" placeholder="Enter your code" type="text" required value={code} onChange={(e) => setCode(e.target.value)} leftIcon={<FontAwesomeIcon icon={faKey} className="w-4 h-4" />} autoComplete="one-time-code" />
+        <Input id="email" label="Email" placeholder="Enter your email" type="text" required value={email} onChange={(e) => setEmail(e.target.value)} rightIcon={<button disabled={!captchaData || !captchaInput} type="button" className="text-primary font-semibold hover:underline" onClick={() => onResend({
+          captcha_id: captchaData?.captcha_id,
+          captcha: captchaInput,
+        })}>
+          Resend Email
+        </button>} />
 
         <div className="space-y-2">
           <div className="flex items-center gap-4">
@@ -114,12 +103,6 @@ export function EmailConfirmationForm() {
         </Button>
 
         <div className="text-center text-sm text-text-secondary space-y-2">
-          <div>
-            Didn&apos;t receive the code?{" "}
-            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => router.push("/resend-email-verification")}>
-              Resend Email
-            </button>
-          </div>
           <div>
             Already confirmed?{" "}
             <button

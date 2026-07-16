@@ -139,6 +139,7 @@ export interface RegisterRequest extends CaptchaData {
 
 export interface EmailConfirmationRequest extends CaptchaData {
   code: string;
+  email: string;
 }
 
 export interface Staff {
