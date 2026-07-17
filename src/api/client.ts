@@ -1,5 +1,3 @@
-import { useAppStore, useAuthStore } from "@/stores";
-
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3004/apis/v1';
 
 function getAuthToken(): string | null {
@@ -27,7 +25,7 @@ function getStaffId(orgId: String): string | null {
     const storage = localStorage.getItem('nexusiam-auth-storage');
     if (storage) {
       const parsed = JSON.parse(storage);
-      return parsed.state.user.organizations.find((org: any) => org.id === orgId)?.staff_id || null;
+      return parsed.state.user ? parsed.state.user.organizations.find((org: any) => org.id === orgId)?.staff_id : null;
     }
   } catch (e) {
     console.log('Error parsing nexusiam-storage', e);
